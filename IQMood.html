@@ -1,10 +1,474 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<title>IQMood</title> 
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<!--meta http-equiv="refresh" content="5"/--> 
+	<!--link rel="stylesheet" href="style/jquery.mobile-1.2.0.min.css" /-->
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+	<link rel="stylesheet" href="style/jquery.countdown.css" />
+	<script language="Javascript" type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
+	<!--script language="Javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script-->
+	<script language="Javascript" type="text/javascript" src="js/jquery.mobile-1.2.0.min.js"></script>
+	<!--script language="Javascript" type="text/javascript" src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.js"></script-->
+	<script src="js/d3.v2.js"></script>
+	<script type="text/javascript" src="js/jquery.countdown.js"></script>
+	<style type='text/css'>
+		
+		
+		/*Sets the slider label position*/
+		.slider-label {
+			position:fixed;
+		}
+		/*Sets the icon images*/
+		.ui-icon-statistics{
+			background-image: url('images/16-line-chart.png');
+		}
+		
+		/*Sets the axis settings*/
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+		}
+		.axis text {
+			font-family: sans-serif;
+			font-size: 11px;
+		}
+		html, body {
+			height: 100%;
+		}
+	</style>
+	<script language="javascript" type="text/javascript">
+	
+		//Save the riddles
+		localStorage.setItem("riddle_0", "images/usa3.jpg");
+		localStorage.setItem("riddle_1", "images/india.jpg");
+		localStorage.setItem("riddle_2", "images/france.jpg")
+		localStorage.setItem("riddle_3", "images/uk.jpg");
+		//Save the possible answers
+		localStorage.setItem("answer_00", "USA");
+		localStorage.setItem("answer_01", "Russia");
+		localStorage.setItem("answer_02", "Alaska");
+		localStorage.setItem("answer_03", "Belgium");
+		localStorage.setItem("answer_10", "India");
+		localStorage.setItem("answer_11", "Russia");
+		localStorage.setItem("answer_12", "China");
+		localStorage.setItem("answer_13", "Pakistan");
+		localStorage.setItem("answer_20", "France");
+		localStorage.setItem("answer_21", "Netherlands");
+		localStorage.setItem("answer_22", "Germany");
+		localStorage.setItem("answer_23", "UK");
+		localStorage.setItem("answer_30", "UK");
+		localStorage.setItem("answer_31", "China");
+		localStorage.setItem("answer_32", "Spain");
+		localStorage.setItem("answer_33", "Mexico");
+		//Counter for saving the emotions
+		var counter = 2;
+		//Array that contains all the data
+		var dataset;
+		//Storing some test data	
+		localStorage.setItem("happy_sad_0", 40);
+		localStorage.setItem("relaxed_stressed_0", 70);
+		localStorage.setItem("energetic_slow_ 0", 75);
+		localStorage.setItem("confident_insecure_0", 55);
+		localStorage.setItem("riddletime_0", 10);	
+		localStorage.setItem("happy_sad_1", 20);
+		localStorage.setItem("relaxed_stressed_1", 65);
+		localStorage.setItem("energetic_slow_ 1", 40);
+		localStorage.setItem("confident_insecure_1", 30);
+		localStorage.setItem("riddletime_1", 75);
+	       
+//		$('#propertiespage').bind('swipeleft', function() {
+//			$.mobile.changePage("#emotionspage");
+//		});
+	       
+		//Script for putting the sliderlabels in the right position
+		$('#emotionspage').live('pageshow', function() { 
+			var offset,
+			$slider = null,
+			dims = {
+				top: null,
+				left: null
+			};
+			$(".slider-label").each(function() {
+				var $this = $(this);
+				$slider = $this.prevAll("div.ui-slider[role='application']");
+				if ( $this.hasClass("left") ) {
+					offset = $slider.offset();
+					dims.top = offset.top + $slider.outerHeight();
+					dims.left = offset.left - 20;
+				}
+				if ( $this.hasClass("right") ) {
+					dims.left += 2*20 + $slider.innerWidth() - $this.innerWidth();
+				}
+				$this.css( dims );
+			});
+		});		
+				
+		//Function for saving the birthyear and sex
+		function save_properties() {
+			localStorage.setItem("age", $('#age').val())
+			if($('#radio-choice-m').is(':checked')){
+				localStorage.setItem("sex", $('#radio-choice-m').val());
+			}
+			else if ($('#radio-choice-f').is(':checked')){
+				localStorage.setItem("sex", $('#radio-choice-f').val());
+			}
+		}	
+				
+	       //Function for saving the emotions
+		function save_emotions() {
+			localStorage.setItem("happy_sad_" + counter, $('#slider-1').val());
+			localStorage.setItem("relaxed_stressed_" + counter, $('#slider-2').val());
+			localStorage.setItem("energetic_slow_ " + counter, $('#slider-3').val());
+			localStorage.setItem("confident_insecure_" + counter, $('#slider-4').val());
+			localStorage.setItem("riddletime_" + counter, 20);
+			counter ++;
+			start_timer();
+			new_riddle();
+		}
+		
+		//Info about timer: http://keith-wood.name/countdown.html
+		//Function to start te countdown timer
+		function start_timer() {
+			$('#countdowntimer').countdown({until: +30, format: 'S', onExpiry: liftOff});
+		}
+		
+		//Function that handle's the time's up
+		function liftOff() { 
+			var r=confirm("Time's up!");
+			if (r==true) {
+				$.mobile.changePage("#emotionspage");
+				$('#countdowntimer').countdown('destroy');
+			}
+			else {
+			}
+		} 
+		
+		//Function to detract time from countdown timer
+		function detract(n){
+			var periods = $('#countdowntimer').countdown('getTimes'); 
+			var newuntil = periods[6] - n;
+			$('#countdowntimer').countdown('option', {until: newuntil});
+		}		
+	       			       
+	       //Function that creates a new riddle
+	       function new_riddle(){
+			var ranNumber = Math.round(Math.random() * 3);
+			localStorage.setItem("aaaaaaaaaa", ranNumber);
+			get_image(ranNumber);
+			set_answers(ranNumber);
+			$('#countdowntimer').countdown('option', {until: +30});
+	       }
+	       
+	       //Function that loads the riddle image (n is the number of the riddle)
+	       function get_image(n){
+			var image = localStorage.getItem("riddle_" + n);
+			$('#riddle_image').attr("src",image);
+	       }
+	       
+	       //Function that resets the sliders
+	       function reset_sliders(){
+			$('#slider-1').val(50);
+			$('#slider-1').slider('refresh');
+			$('#slider-2').val(50);
+			$('#slider-2').slider('refresh');
+			$('#slider-3').val(50);
+			$('#slider-3').slider('refresh');
+			$('#slider-4').val(50);
+			$('#slider-4').slider('refresh');
+	       }
+	       
+	       //Function that loads the answers for the riddle and puts that in a random order
+	       function set_answers(n){
+			var k = Math.round(Math.random() * 2);
+			localStorage.setItem("choice_a", k);
+			var second = (k+2)%3;
+			localStorage.setItem("choice_b", second);
+			var third = (k+1)%3;
+			localStorage.setItem("choice_c", third);
+			var forth = (k+3)%4;
+			localStorage.setItem("choice_d", forth);
+			var answer_a = localStorage.getItem("answer_" + n + k);
+			$('#oldBtnaText').text(answer_a);
+			var answer_b = localStorage.getItem("answer_" + n + second);
+			$('#oldBtnbText').text(answer_b);
+			var answer_c = localStorage.getItem("answer_" + n + third);
+			$('#oldBtncText').text(answer_c);
+	       }
+		
+		//Function that checks wether the answer was good or bad
+		function check_answer(n){
+			var check = localStorage.getItem("choice_" + n);
+			if(check == 0) {
+				answer_good();
+			} 
+			else{
+//				answer_bad();
+				$('#oldBtn' + n + 'Text').text("FOUT");
+				detract(5);
+			}
+		}
+		
+		//Function that alerts the user when he solved the riddle
+		function answer_good(){
+			var r=confirm("You were correct!");
+			if (r==true) {
+				$.mobile.changePage("#emotionspage");
+				reset_sliders();
+			}
+			else {
+			}
+//			alert("Champ!");
+		}
+		//Function that alerts the user when he choose a wrong answer
+		function answer_bad(){
+			alert("Loser!");
+		}
+		
+		//Function that loads the stats and the graph
+		function create_stats(){
+			get_data();
+			create_graph();
+		}
+		//Function that puts all the collected data in the dataset array
+		function get_data(){
+			dataset = new Array(counter);
+			for (j=0; j<counter; j++){
+				dataset[j] = new Array(5);
+				dataset[j][0] = localStorage.getItem("happy_sad_" + j);
+				dataset[j][1] = localStorage.getItem("relaxed_stressed_" + j);
+				dataset[j][2] = localStorage.getItem("energetic_slow_ " + j);
+				dataset[j][3] = localStorage.getItem("confidentinsecure_" + j);
+				dataset[j][4] = localStorage.getItem("riddletime_" + j);
+			}
+//			localStorage.setItem("tester", dataset);
+		}
+		
+//		var dataset2 = [
+//			[40, 70, 75, 50, 10],
+//			[20, 65, 40, 50, 75]
+//		];
+//		localStorage.setItem("testdataset2", dataset2);
+		
+		//Function that creates the graph using d3
+		function create_graph(){
+			var w = 300;
+			var h = 300;
+		       var padding = 30; //Space between axes and dots
+			var riddleScale = d3.scale.linear()
+				.domain([0, 100])//((d3.max(dataset2, function(d) { return d[4]; })) + 20) ])
+				.range([padding, w-padding*2]);
+			var happysadScale = d3.scale.linear()
+				.domain([0, 100])//((d3.max(dataset2, function(d) { return d[0]; })) + 20) ])
+				.range([h-padding, padding]);
+			var xAxis = d3.svg.axis()
+				.scale(riddleScale)
+				.orient("bottom")
+				.ticks(10);
+			var yAxis = d3.svg.axis()
+				.scale(happysadScale)
+				.orient("left")
+				.ticks(10);
+		       var svg = d3.select("#graph")
+				.append("svg")
+				.attr("width", w)
+				.attr("height", h)
+				.attr("align", "center");
+			svg.selectAll("circle")
+				.data(dataset)
+				.enter()
+				.append("circle")
+				.attr("cx", function(d) {
+					return riddleScale(d[4]);
+				})
+				.attr("cy", function(d) {
+					return happysadScale(d[0]);
+				})
+				.attr("r", 10)
+				.attr("fill", "black");
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(0," + (w - padding) + ")")
+				.call(xAxis);
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(" + padding + ",0)")
+				.call(yAxis);
+		}
+	</script>
+</head> 
+
+<body> 
+
+<div data-role="page" id="propertiespage">
+
+	<div data-role="header">
+		<h2>PROPERTIES</h2>
+	</div>
+	
+	<div data-role="content">
+
+		<div align="center">
+			<img id="properties_image" src="http://wdfyfe.files.wordpress.com/2012/07/puzzle11.jpg" alt="puzzle" style="height:100px;width:auto">
+		</div>  
+
+		<div data-role="fieldcontain" align="center">
+			<fieldset data-role="controlgroup" data-type="horizontal">
+				
+				<label for="age" >AGE</label>
+				<input type="text" name="age" id="age" value=""  />
+				
+			</fieldset>
+		</div>
+        
+		<div data-role="fieldcontain" align="center" >
+			<fieldset data-role="controlgroup" data-type="horizontal">
+
+				<label for="test" >SEX</label>
+					
+				<div id="test" align="center">
+					<input type="radio" name="sex" id="radio-choice-m" value="male"/>
+					<label for="radio-choice-m">M</label>
+					
+					<input type="radio" name="sex" id="radio-choice-f" value="female"/>
+					<label for="radio-choice-f">F</label>
+				</div>
+				
+			</fieldset>
+		</div>
+	</div>
+
+	<div data-role="footer" class="ui-bar" data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#emotionspage" onclick="save_properties()" data-role="button" id="prop_go" data-icon="arrow-r" align="right" data-transition="fade" data-id="myfooter">GO!</a></li>
+			</ul>
+		</div>
+	</div>
+
+</div>
+
+<div data-role="page" id="emotionspage">
+
+	<div data-role="header">
+		<h2>HOW ARE YOU?</h2>
+	</div>
+
+	<div data-role="content">	
+		<div data-role="fieldcontain" class="ui-hide-label" align="center">
+			<label for="slider-1"></label>
+			<input type="range" name="slider-fill" style="display:none" id="slider-1" value="50" min="0" max="100" data-highlight="true" data-track-theme="b"/>
+			<span class="slider-label left">HAPPY</span>
+			<span class="slider-label right">SAD</span>
+		</div>
+		<br>
+		<div data-role="fieldcontain" class="ui-hide-label" align="center">
+			<label for="slider-2"></label>
+			<input type="range" name="slider-fill" style="display:none" id="slider-2" value="50" min="0" max="100" data-highlight="true" data-track-theme="b"/>
+			<span class="slider-label left">RELAXED</span>
+			<span class="slider-label right">STRESSED</span>
+		</div>
+		<br>
+		<div data-role="fieldcontain" class="ui-hide-label" align="center">
+			<label for="slider-3"></label>
+			<input type="range" name="slider-fill" style="display:none" id="slider-3" value="50" min="0" max="100" data-highlight="true" data-track-theme="b"/>
+			<span class="slider-label left">ENERGETIC</span>
+			<span class="slider-label right">SLOW</span>	
+		</div>
+		<br>
+		<div data-role="fieldcontain" class="ui-hide-label" align="center">
+			<label for="slider-4"></label>
+			<input type="range" name="slider-fill" style="display:none" id="slider-4" value="50" min="0" max="100" data-highlight="true" data-track-theme="b"/>
+			<span class="slider-label left">CONFIDENT</span>
+			<span class="slider-label right">INSECURE</span>	
+		</div>
+		<br>	
+		
+	</div>
+
+	<div data-role="footer" class="ui-bar" data-position="fixed"  data-id="myfooter">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#propertiespage" data-role="button" data-icon="gear" data-iconpos="notext">Properties</a></li>
+				<li><a href="#statistics" onclick="create_stats()" data-role="button" data-icon="statistics" data-iconpos="notext">Statistics</a></li>
+				<li><a href="#riddlepage" onclick="save_emotions()" id="saveemotions" data-role="button" data-icon="arrow-r" data-iconpos="notext">Go!</a></li>
+			</ul>
+		</div>
+	</div>
+
+</div>
+
+<div data-role="page" id="riddlepage">
+
+	<div data-role="header">
+		<h2>SOLVE IT!</h2>
+	</div>
+	
+	<div data-role="content">
+	
+		<div align="center">
+			<img id="riddle_image" src="alt" alt="A riddle should appear here..." style="height:175px;width:auto">
+		</div> 
+		
+		<div data-role="fieldcontain" class="ui-grid-b">
+			<div class="ui-block-a">
+				<a data-role="button" id="answer_a" onclick="check_answer('a')"><span id="oldBtnaText">A</span></a>
+			</div>
+			<div class="ui-block-b">
+				<a data-role="button" id="answer_b" onclick="check_answer('b')" ><span id="oldBtnbText">B</span></a>
+			</div>
+			<div class="ui-block-c">
+				<a data-role="button" id="answer_c" onclick="check_answer('c')" ><span id="oldBtncText">C</span></a>
+			</div>
+		</div>
+		
+		<div id="countdowntimer" align="center"></div>
+		
+	</div>
+	
+	<div data-role="footer" class="ui-bar" data-position="fixed" data-id="myfooter">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#emotionspage" data-role="button" data-icon="arrow-l" data-iconpos="notext">Back</a></li>
+				<li><a onclick="detract(5)" data-role="button" data-icon="arrow-l" data-iconpos="notext">-5</a></li>
+				<li><a onclick="new_riddle()" data-role="button" data-icon="arrow-r" data-iconpos="notext" align="right">New riddle</a></li>
+			
+			</ul>
+			
+		</div>
+	</div>
+	
+</div>
+
+<div data-role="page" id="statistics">
+
+	<div data-role="header">
+		<h1>Statistics</h1>
+	</div>
+
+	<div data-role="content" id="graph" align="center" valign="center">
+	</div>
+
+	<div data-role="footer" class="ui-bar" data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#emotionspage" data-role="button" id="prop_go" data-icon="arrow-l" align="right">BACK</a></li>
+			</ul>
+			
+		</div>
+	</div>
+
+</div>
+ <!--script type="text/javascript">
+       $('#startpage').live('pagecreate', function() {
+		$('#saveemotions').click(function() {
+			localStorage.setItem("test", $('#slider-1').val());
+		});
+       });
+</script-->
 
 </body>
 </html>
