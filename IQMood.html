@@ -4,14 +4,18 @@
 	<title>IQMood</title> 
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<!--meta http-equiv="refresh" content="5"/--> 
-	<!--link rel="stylesheet" href="style/jquery.mobile-1.2.0.min.css" /-->
-	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+	<link rel="stylesheet" href="style/jquery.mobile-1.2.0.min.css" />
+	<!--link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" /-->
 	<link rel="stylesheet" href="style/jquery.countdown.css" />
 	<script language="Javascript" type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
 	<!--script language="Javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script-->
 	<script language="Javascript" type="text/javascript" src="js/jquery.mobile-1.2.0.min.js"></script>
 	<!--script language="Javascript" type="text/javascript" src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.js"></script-->
 	<script src="js/d3.v2.js"></script>
+	<!--script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script-->
+	<script type="text/javascript" src="js/rgbcolor.js"></script> 
+	<!--script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/canvg.js"></script-->
+	<script type="text/javascript" src="js/canvg.js"></script>
 	<script type="text/javascript" src="js/jquery.countdown.js"></script>
 	<style type='text/css'>
 		
@@ -41,7 +45,8 @@
 		}
 	</style>
 	<script language="javascript" type="text/javascript">
-	
+		
+		localStorage.clear();
 		//Save the riddles
 		localStorage.setItem("riddle_0", "images/usa3.jpg");
 		localStorage.setItem("riddle_1", "images/india.jpg");
@@ -65,23 +70,27 @@
 		localStorage.setItem("answer_32", "Spain");
 		localStorage.setItem("answer_33", "Mexico");
 		//Counter for saving the emotions
-		var counter = 2;
+		var counter = 0;
 		//Array that contains all the data
 		var dataset;
 		//Storing some test data	
-		localStorage.setItem("happy_sad_0", 40);
-		localStorage.setItem("relaxed_stressed_0", 70);
-		localStorage.setItem("energetic_slow_ 0", 75);
-		localStorage.setItem("confident_insecure_0", 55);
-		localStorage.setItem("riddletime_0", 10);	
-		localStorage.setItem("happy_sad_1", 20);
-		localStorage.setItem("relaxed_stressed_1", 65);
-		localStorage.setItem("energetic_slow_ 1", 40);
-		localStorage.setItem("confident_insecure_1", 30);
-		localStorage.setItem("riddletime_1", 75);
+//		localStorage.setItem("happy_sad_0", 40);
+//		localStorage.setItem("relaxed_stressed_0", 70);
+//		localStorage.setItem("energetic_slow_ 0", 75);
+//		localStorage.setItem("confident_insecure_0", 55);
+//		localStorage.setItem("riddletime_0", 10);	
+//		localStorage.setItem("happy_sad_1", 20);
+//		localStorage.setItem("relaxed_stressed_1", 65);
+//		localStorage.setItem("energetic_slow_ 1", 40);
+//		localStorage.setItem("confident_insecure_1", 30);
+//		localStorage.setItem("riddletime_1", 75);
 	       
 //		$('#propertiespage').bind('swipeleft', function() {
 //			$.mobile.changePage("#emotionspage");
+//		});
+
+//		$(document).on('mobileinit', function () {
+//			$.mobile.ignoreContentEnabled = true;
 //		});
 	       
 		//Script for putting the sliderlabels in the right position
@@ -124,8 +133,6 @@
 			localStorage.setItem("relaxed_stressed_" + counter, $('#slider-2').val());
 			localStorage.setItem("energetic_slow_ " + counter, $('#slider-3').val());
 			localStorage.setItem("confident_insecure_" + counter, $('#slider-4').val());
-			localStorage.setItem("riddletime_" + counter, 20);
-			counter ++;
 			start_timer();
 			new_riddle();
 		}
@@ -181,7 +188,7 @@
 			$('#slider-4').slider('refresh');
 	       }
 	       
-	       //Function that loads the answers for the riddle and puts that in a random order
+	       //Function that loads the answers for the riddle and puts that in a random order, NOG NIET VOLLEDIG RANDOM
 	       function set_answers(n){
 			var k = Math.round(Math.random() * 2);
 			localStorage.setItem("choice_a", k);
@@ -206,8 +213,7 @@
 				answer_good();
 			} 
 			else{
-//				answer_bad();
-				$('#oldBtn' + n + 'Text').text("FOUT");
+				$('#oldBtn' + n + 'Text').text("FALSE");
 				detract(5);
 			}
 		}
@@ -218,20 +224,20 @@
 			if (r==true) {
 				$.mobile.changePage("#emotionspage");
 				reset_sliders();
+				var periods = $('#countdowntimer').countdown('getTimes'); 
+				var timesolved = periods[6];
+				localStorage.setItem("riddletime_" + counter, timesolved);
+				counter++;
+				$('#countdowntimer').countdown('destroy');
 			}
 			else {
 			}
-//			alert("Champ!");
-		}
-		//Function that alerts the user when he choose a wrong answer
-		function answer_bad(){
-			alert("Loser!");
 		}
 		
 		//Function that loads the stats and the graph
 		function create_stats(){
 			get_data();
-			create_graph();
+			create_svg();
 		}
 		//Function that puts all the collected data in the dataset array
 		function get_data(){
@@ -252,18 +258,45 @@
 //			[20, 65, 40, 50, 75]
 //		];
 //		localStorage.setItem("testdataset2", dataset2);
+
+//		var datates = d3.range(500).map(function() {
+//		  	return {xloc: 0, yloc: 0, xvel: 0, yvel: 0};
+//		});
+//		localStorage.set("testest",datates);
 		
 		//Function that creates the graph using d3
-		function create_graph(){
+		
+		var svg;
+		
+		function create_svg(){
 			var w = 300;
 			var h = 300;
 		       var padding = 30; //Space between axes and dots
 			var riddleScale = d3.scale.linear()
-				.domain([0, 100])//((d3.max(dataset2, function(d) { return d[4]; })) + 20) ])
+				.domain([0, 35])//((d3.max(dataset2, function(d) { return d[4]; })) + 20) ])
 				.range([padding, w-padding*2]);
 			var happysadScale = d3.scale.linear()
 				.domain([0, 100])//((d3.max(dataset2, function(d) { return d[0]; })) + 20) ])
 				.range([h-padding, padding]);
+				
+//			var canvas = d3.select("#graph")
+//				.append("canvas")
+//				.attr("width", w)
+//				.attr("height", h);
+	
+//			var context = canvas.node().getContext("2d");
+//			context.fillStyle = "black";
+//			context.strokeStyle = "#666";
+//			context.strokeWidth = 1.5;
+			
+//			dataset.forEach(function(d) {
+//				context.beginPath();
+//				context.arc(riddleScale(d[4]), happysadScale(d[0]), 10, 0, 2*Math.PI);
+//				context.fill();
+//				context.stroke();
+//			});
+				
+			
 			var xAxis = d3.svg.axis()
 				.scale(riddleScale)
 				.orient("bottom")
@@ -272,11 +305,13 @@
 				.scale(happysadScale)
 				.orient("left")
 				.ticks(10);
-		       var svg = d3.select("#graph")
+				
+		       svg = d3.select("#graph")
 				.append("svg")
 				.attr("width", w)
 				.attr("height", h)
 				.attr("align", "center");
+			
 			svg.selectAll("circle")
 				.data(dataset)
 				.enter()
@@ -289,6 +324,8 @@
 				})
 				.attr("r", 10)
 				.attr("fill", "black");
+				
+			
 			svg.append("g")
 				.attr("class", "axis")
 				.attr("transform", "translate(0," + (w - padding) + ")")
@@ -297,6 +334,25 @@
 				.attr("class", "axis")
 				.attr("transform", "translate(" + padding + ",0)")
 				.call(yAxis);
+		}
+		
+		function converse_svg() {
+		
+			container = $("#graph");
+
+			//Create a new canvas to hold our rendering
+			var canvas = document.createElement("canvas");
+			canvas.setAttribute("style", "height:" + container.height() + ";width:" + container.width() + ";");
+
+			//Use canvg to convert SVG to canvas and render the results
+			canvg(canvas, svg);
+
+			//Add the new canvas to the page
+			container.append(canvas);
+		}
+		
+		function remove_graph(){
+			svg.remove();
 		}
 	</script>
 </head> 
@@ -393,7 +449,7 @@
 		<div data-role="navbar">
 			<ul>
 				<li><a href="#propertiespage" data-role="button" data-icon="gear" data-iconpos="notext">Properties</a></li>
-				<li><a href="#statistics" onclick="create_stats()" data-role="button" data-icon="statistics" data-iconpos="notext">Statistics</a></li>
+				<li><a href="#statisticspage" onclick="create_stats()" data-role="button" data-icon="statistics" data-iconpos="notext">Statistics</a></li>
 				<li><a href="#riddlepage" onclick="save_emotions()" id="saveemotions" data-role="button" data-icon="arrow-r" data-iconpos="notext">Go!</a></li>
 			</ul>
 		</div>
@@ -408,6 +464,7 @@
 	</div>
 	
 	<div data-role="content">
+	
 	
 		<div align="center">
 			<img id="riddle_image" src="alt" alt="A riddle should appear here..." style="height:175px;width:auto">
@@ -443,7 +500,7 @@
 	
 </div>
 
-<div data-role="page" id="statistics">
+<div data-role="page" id="statisticspage">
 
 	<div data-role="header">
 		<h1>Statistics</h1>
@@ -455,7 +512,7 @@
 	<div data-role="footer" class="ui-bar" data-position="fixed">
 		<div data-role="navbar">
 			<ul>
-				<li><a href="#emotionspage" data-role="button" id="prop_go" data-icon="arrow-l" align="right">BACK</a></li>
+				<li><a href="#emotionspage" data-role="button" onclick="remove_graph()" id="prop_go" data-icon="arrow-l" align="right">BACK</a></li>
 			</ul>
 			
 		</div>
