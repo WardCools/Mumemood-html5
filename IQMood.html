@@ -69,7 +69,7 @@
 		<div data-role="footer" class="ui-bar" data-position="fixed">
 			<div data-role="navbar">
 				<ul>
-					<li><a href="#emotionspage" onclick="save_properties()"
+					<li><a href="#emotionspage" onclick="saveProperties()"
 						data-role="button" id="prop_go" data-icon="arrow-r"
 						data-transition="fade" data-id="myfooter">GO!</a></li>
 				</ul>
@@ -126,9 +126,9 @@
 				<ul>
 					<li><a href="#propertiespage" data-role="button"
 						data-icon="gear" data-iconpos="notext">Properties</a></li>
-					<li><a href="#statisticspage" onclick="create_stats()"
+					<li><a href="#statisticspage" onclick="createStats()"
 						data-role="button" data-icon="statistics" data-iconpos="notext">Statistics</a></li>
-					<li><a href="#riddlepage" onclick="save_emotions()"
+					<li><a href="#riddlepage" onclick="saveEmotions()"
 						id="saveemotions" data-role="button" data-icon="arrow-r"
 						data-iconpos="notext">Go!</a></li>
 				</ul>
@@ -147,22 +147,22 @@
 
 
 			<div align="center">
-				<img id="riddle_image" src="images/uk.jpg"
+				<img id="riddle_image" src=""
 					alt="A riddle should appear here..."
 					style="height: 175px; width: auto">
 			</div>
 
 			<div data-role="fieldcontain" class="ui-grid-b">
 				<div class="ui-block-a">
-					<a data-role="button" id="answer_a" onclick="check_answer('a')"><span
+					<a data-role="button" id="answer_a" onclick="checkAnswer('a')"><span
 						id="oldBtnaText">A</span></a>
 				</div>
 				<div class="ui-block-b">
-					<a data-role="button" id="answer_b" onclick="check_answer('b')"><span
+					<a data-role="button" id="answer_b" onclick="checkAnswer('b')"><span
 						id="oldBtnbText">B</span></a>
 				</div>
 				<div class="ui-block-c">
-					<a data-role="button" id="answer_c" onclick="check_answer('c')"><span
+					<a data-role="button" id="answer_c" onclick="checkAnswer('c')"><span
 						id="oldBtncText">C</span></a>
 				</div>
 			</div>
@@ -179,7 +179,7 @@
 						data-icon="arrow-l" data-iconpos="notext">Back</a></li>
 					<li><a onclick="detract(5)" data-role="button"
 						data-icon="arrow-l" data-iconpos="notext">-5</a></li>
-					<li><a onclick="new_riddle()" data-role="button"
+					<li><a onclick="getRiddle()" data-role="button"
 						data-icon="arrow-r" data-iconpos="notext">New riddle</a></li>
 
 				</ul>
@@ -201,7 +201,7 @@
 			<div data-role="navbar">
 				<ul>
 					<li><a href="#emotionspage" data-role="button"
-						onclick="remove_graph()" id="prop_go" data-icon="arrow-l">BACK</a></li>
+						onclick="removeGraph()" id="prop_go" data-icon="arrow-l">BACK</a></li>
 				</ul>
 
 			</div>

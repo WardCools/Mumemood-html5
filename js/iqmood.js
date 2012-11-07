@@ -1,50 +1,16 @@
-
-
+//Clears the localStorage when the app is started
 localStorage.clear();
-//Save the riddles
-localStorage.setItem("riddle_0", "images/usa3.jpg");
-localStorage.setItem("riddle_1", "images/india.jpg");
-localStorage.setItem("riddle_2", "images/france.jpg")
-localStorage.setItem("riddle_3", "images/uk.jpg");
-//Save the possible answers
-localStorage.setItem("answer_00", "USA");
-localStorage.setItem("answer_01", "Russia");
-localStorage.setItem("answer_02", "Alaska");
-localStorage.setItem("answer_03", "Belgium");
-localStorage.setItem("answer_10", "India");
-localStorage.setItem("answer_11", "Russia");
-localStorage.setItem("answer_12", "China");
-localStorage.setItem("answer_13", "Pakistan");
-localStorage.setItem("answer_20", "France");
-localStorage.setItem("answer_21", "Netherlands");
-localStorage.setItem("answer_22", "Germany");
-localStorage.setItem("answer_23", "UK");
-localStorage.setItem("answer_30", "UK");
-localStorage.setItem("answer_31", "China");
-localStorage.setItem("answer_32", "Spain");
-localStorage.setItem("answer_33", "Mexico");
-//Array that contains all the data
-var dataset;
-//Storing some test data	
-//localStorage.setItem("happy_sad_0", 40);
-//localStorage.setItem("relaxed_stressed_0", 70);
-//localStorage.setItem("energetic_slow_ 0", 75);
-//localStorage.setItem("confident_insecure_0", 55);
-//localStorage.setItem("riddletime_0", 10);	
-//localStorage.setItem("happy_sad_1", 20);
-//localStorage.setItem("relaxed_stressed_1", 65);
-//localStorage.setItem("energetic_slow_ 1", 40);
-//localStorage.setItem("confident_insecure_1", 30);
-//localStorage.setItem("riddletime_1", 75);
 
+//Some functions to test swiping (doesn't work yet)
 //$('#propertiespage').bind('swipeleft', function() {
 //$.mobile.changePage("#emotionspage");
 //});
-
 //$(document).on('mobileinit', function () {
 //$.mobile.ignoreContentEnabled = true;
 //});
 
+//Array that contains all the data
+var dataset;
 var db;
 var dataTables = ["id", "feeling_1", "feeling_2", "feeling_3", "feeling_4", "time"];
 var riddleTables = ["riddle", "answer_1", "answer_2", "answer_3", "answer_4"];
@@ -60,124 +26,15 @@ var feeling_3 = 50;
 var feeling_4 = 50;
 var time = 0;
 var riddle = new Array(5);
+var choice_a;
+var choice_b;
+var choice_c;
 
 window.onload = init();
-
+//Function that contains everything that should be done when starting the app
 function init(){
 	initDatabase();
 }
-
-
-//Function that initialises the database
-function initDatabase() {
-	try {
-		if (!window.openDatabase) {
-			alert('Databases are not supported in this browser.');
-		} else {
-			var shortName = 'IQMOODDB';
-			var version = '1.0';
-			var displayName = 'IQMOOD Database';
-			var maxSize = 100000; //  bytes
-			db = window.openDatabase(shortName, version, displayName, maxSize);
-			db.transaction(storeRiddles, errorCB, successCB);
-			clearData();
-			db.transaction(createDataTables, errorCB, successCB);
-			storeEmotions();
-		}
-	} catch(e) {
-		if (e == 2) {
-			// Version number mismatch.
-			alert("Invalid database version.");
-		} else {
-			alert("Unknown error "+e+".");
-		}
-		return;
-	}
-}
-
-//Transaction error callback
-//
-function errorCB(tx, err) {
-	alert("Error processing SQL: "+err);
-}
-
-//Transaction success callback
-//
-function successCB() {
-//	alert("successsss!");
-}
-
-//Creates the IQMOODRIDDLES table and stores the riddles in it
-function storeRiddles(transaction){
-	transaction.executeSql('DROP TABLE IF EXISTS IQMOODRIDDLES');
-	transaction.executeSql('CREATE TABLE IF NOT EXISTS IQMOODRIDDLES(' + riddleTables[0] + ' TEXT, ' + riddleTables[1] + ' TEXT, ' + riddleTables[2] + ' TEXT, ' + riddleTables[3] + ' TEXT, ' + riddleTables[4] + ' TEXT);');
-	for(var i = 0; i<riddles.length; i++){
-		transaction.executeSql("INSERT INTO IQMOODRIDDLES(" + riddleTables[0] + ", " + riddleTables[1] + ", " + riddleTables[2] + ", " + riddleTables[3] + ", " + riddleTables[4] + ") VALUES (?, ?, ?, ?, ?)", [riddles[i], answers_1[i], answers_2[i], answers_3[i], answers_4[i]]);
-	}
-
-}
-
-//Creates he IQMOODDATA
-function createDataTables(transaction){
-	transaction.executeSql('CREATE TABLE IF NOT EXISTS IQMOODDATA(' + dataTables[0] + ' INTEGER UNIQUE,' + dataTables[1] + ' INTEGER,' + dataTables[2] + ' INTEGER, ' + dataTables[3] + ' INTEGER, ' + dataTables[4] + ' INTEGER, ' + dataTables[5] + ' INTEGER);');
-}
-
-//Stores the emotions stored in the counter, feeling1-4 and time variables
-function storeEmotions(){
-	counter++;
-	db.transaction(
-		function (transaction) {
-			transaction.executeSql("INSERT INTO IQMOODDATA(" + dataTables[0] + ", " + dataTables[1] + ", " + dataTables[2] + ", " + dataTables[3] + ", " + dataTables[4] + ", " + dataTables[5] + ") VALUES (?, ?, ?, ?, ?, ?)", [counter, feeling_1, feeling_2, feeling_3, feeling_4, time]);
-		}, errorCB, successCB
-	);
-}
-
-//Deletes the IQMOODDATA table
-function clearData(){
-	db.transaction(
-		function (transaction) {
-			transaction.executeSql('DROP TABLE IF EXISTS IQMOODDATA');
-		}, errorCB, successCB
-	);
-}
-
-//Gets the data from the IQMOODDATA table and stores it in the dataset array
-function getData(){
-	db.transaction(queryDB, errorCB);
-}
-function queryDB(transaction) {
-	transaction.executeSql('SELECT * FROM IQMOODDATA',[], querySuccess, errorCB);
-}
-function querySuccess(transaction, results) {
-//	alert(results.rows.length);
-	dataset = new Array(results.rows.length);
-	for(var i = 0; i < results.rows.length; i++){
-		dataset[i] = new Array(5);
-		dataset[i][0] = results.rows.item(i).feeling_1;//dataTables[1];
-		dataset[i][1] = results.rows.item(i).feeling_2;//dataTables[2];
-		dataset[i][2] = results.rows.item(i).feeling_3;//dataTables[3];
-		dataset[i][3] = results.rows.item(i).feeling_4;//dataTables[4];
-		dataset[i][4] = results.rows.item(i).time;//dataTables[5];
-	}
-}
-
-//Gets a random riddle and its answers from the IQMOODRIDDLES table and stores it in the riddle array
-function getRiddle(){
-	alert("ofar");
-	db.transaction(queryRiddleDB, errorCB);
-}
-function queryRiddleDB(transaction) {
-	transaction.executeSql('SELECT * FROM IQMOODRIDDLES',[], queryRiddleSuccess, errorCB);
-}
-function queryRiddleSuccess(transaction, results) {
-	var ranNumber = Math.round(Math.random() * 3);
-	riddle[0] = results.rows.item(ranNumber).riddleTables[0];
-	riddle[1] = results.rows.item(ranNumber).riddleTables[1];
-	riddle[2] = results.rows.item(ranNumber).riddleTables[2];
-	riddle[3] = results.rows.item(ranNumber).riddleTables[3];
-	riddle[4] = results.rows.item(ranNumber).riddleTables[4];
-}
-
 
 //Script for putting the sliderlabels in the right position
 $('#emotionspage').live('pageshow', function() { 
@@ -202,8 +59,119 @@ $('#emotionspage').live('pageshow', function() {
 	});
 });		
 
+//Function that initialises the database
+function initDatabase() {
+	try {
+		if (!window.openDatabase) {
+			alert('Databases are not supported in this browser.');
+		} else {
+			var shortName = 'IQMOODDB';
+			var version = '1.0';
+			var displayName = 'IQMOOD Database';
+			var maxSize = 100000; //  bytes
+			db = window.openDatabase(shortName, version, displayName, maxSize);
+			db.transaction(storeRiddles, errorCB, successCB);
+			clearData();
+			db.transaction(createDataTables, errorCB, successCB);
+//			storeEmotionsDB();
+		}
+	} catch(e) {
+		if (e == 2) {
+			// Version number mismatch.
+			alert("Invalid database version.");
+		} else {
+			alert("Unknown error "+e+".");
+		}
+		return;
+	}
+}
+
+//Transaction error callback
+function errorCB(tx, err) {
+	alert("Error processing SQL: "+err);
+}
+
+//Transaction success callback
+function successCB() {
+//	alert("success!");
+}
+
+//Creates the IQMOODRIDDLES table and stores the riddles in it
+function storeRiddles(transaction){
+	transaction.executeSql('DROP TABLE IF EXISTS IQMOODRIDDLES');
+	transaction.executeSql('CREATE TABLE IF NOT EXISTS IQMOODRIDDLES(' + riddleTables[0] + ' TEXT, ' + riddleTables[1] + ' TEXT, ' + riddleTables[2] + ' TEXT, ' + riddleTables[3] + ' TEXT, ' + riddleTables[4] + ' TEXT);');
+	for(var i = 0; i<riddles.length; i++){
+		transaction.executeSql("INSERT INTO IQMOODRIDDLES(" + riddleTables[0] + ", " + riddleTables[1] + ", " + riddleTables[2] + ", " + riddleTables[3] + ", " + riddleTables[4] + ") VALUES (?, ?, ?, ?, ?)", [riddles[i], answers_1[i], answers_2[i], answers_3[i], answers_4[i]]);
+	}
+}
+
+//Creates he IQMOODDATA
+function createDataTables(transaction){
+	transaction.executeSql('CREATE TABLE IF NOT EXISTS IQMOODDATA(' + dataTables[0] + ' INTEGER UNIQUE,' + dataTables[1] + ' INTEGER,' + dataTables[2] + ' INTEGER, ' + dataTables[3] + ' INTEGER, ' + dataTables[4] + ' INTEGER, ' + dataTables[5] + ' INTEGER);');
+}
+
+//Stores the emotions stored in the counter, feeling1-4 and time variables
+function storeEmotionsDB(){
+	counter++;
+	db.transaction(
+		function (transaction) {
+			transaction.executeSql("INSERT INTO IQMOODDATA(" + dataTables[0] + ", " + dataTables[1] + ", " + dataTables[2] + ", " + dataTables[3] + ", " + dataTables[4] + ", " + dataTables[5] + ") VALUES (?, ?, ?, ?, ?, ?)", [counter, feeling_1, feeling_2, feeling_3, feeling_4, time]);
+		}, errorCB, successCB
+	);
+}
+
+//Deletes the IQMOODDATA table
+function clearData(){
+	db.transaction(
+		function (transaction) {
+			transaction.executeSql('DROP TABLE IF EXISTS IQMOODDATA');
+		}, errorCB, successCB
+	);
+}
+
+//Gets the data from the IQMOODDATA table and stores it in the dataset array
+function createStats(){
+	db.transaction(queryStatsDB, errorCB);
+}
+function queryStatsDB(transaction) {
+	transaction.executeSql('SELECT * FROM IQMOODDATA',[], queryStatsSuccess, errorCB);
+}
+function queryStatsSuccess(transaction, results) {
+//	alert(results.rows.length);
+	dataset = new Array(results.rows.length);
+	for(var i = 0; i < results.rows.length; i++){
+		dataset[i] = new Array(5);
+		dataset[i][0] = results.rows.item(i).feeling_1;//dataTables[1];
+		dataset[i][1] = results.rows.item(i).feeling_2;//dataTables[2];
+		dataset[i][2] = results.rows.item(i).feeling_3;//dataTables[3];
+		dataset[i][3] = results.rows.item(i).feeling_4;//dataTables[4];
+		dataset[i][4] = results.rows.item(i).time;//dataTables[5];
+	}
+	createSvg();
+}
+
+//Gets a random riddle and its answers from the IQMOODRIDDLES table and stores it in the riddle array
+function getRiddle(){
+	db.transaction(queryRiddleDB, errorCB);
+}
+function queryRiddleDB(transaction) {
+	transaction.executeSql('SELECT * FROM IQMOODRIDDLES',[], queryRiddleSuccess, errorCB);
+}
+function queryRiddleSuccess(transaction, results) {
+	var ranNumber = Math.round(Math.random() * 3);
+	riddle[0] = results.rows.item(ranNumber).riddle;//riddleTables[0];
+	riddle[1] = results.rows.item(ranNumber).answer_1;//riddleTables[1];
+	riddle[2] = results.rows.item(ranNumber).answer_2;//riddleTables[2];
+	riddle[3] = results.rows.item(ranNumber).answer_3;//riddleTables[3];
+	riddle[4] = results.rows.item(ranNumber).answer_4;//riddleTables[4];
+	$("#riddle_image").attr("src",riddle[0]);
+	setAnswers();
+	startTimer();
+	$("#countdowntimer").countdown('option', {until: +30});
+}
+
 //Function for saving the birthyear and sex
-function save_properties() {
+function saveProperties() {
 	localStorage.setItem("age", $('#age').val())
 	if($('#radio-choice-m').is(':checked')){
 		localStorage.setItem("sex", $('#radio-choice-m').val());
@@ -214,7 +182,7 @@ function save_properties() {
 }	
 
 //Function that resets the sliders
-function reset_sliders(){
+function resetSliders(){
 	$('#slider-1').val(50);
 	$('#slider-1').slider('refresh');
 	$('#slider-2').val(50);
@@ -226,62 +194,41 @@ function reset_sliders(){
 }
 
 //Function for saving the emotions
-function save_emotions() {
-//	localStorage.setItem("happy_sad_" + counter, $('#slider-1').val());
-//	localStorage.setItem("relaxed_stressed_" + counter, $('#slider-2').val());
-//	localStorage.setItem("energetic_slow_ " + counter, $('#slider-3').val());
-//	localStorage.setItem("confident_insecure_" + counter, $('#slider-4').val());
+function saveEmotions() {
 	feeling_1 = $('#slider-1').val();
 	feeling_2 = $('#slider-2').val();
 	feeling_3 = $('#slider-3').val();
 	feeling_4 = $('#slider-4').val();
-	new_riddle();
-}
-
-//Function that creates a new riddle
-function new_riddle(){
 	getRiddle();
-	alert("voorbij");
-	$('#riddle_image').attr("src",riddle[0]);
-	setAnswers();
-	start_timer();
-	$('#countdowntimer').countdown('option', {until: +30});
-//	var ranNumber = Math.round(Math.random() * 3);
-//	localStorage.setItem("aaaaaaaaaa", ranNumber);
-//	get_image(ranNumber);
 }
 
 //Function that loads the answers for the riddle and puts that in a random order, NOG NIET VOLLEDIG RANDOM
 function setAnswers(n){
-	var k = Math.round(Math.random() * 3);
-	var second = (k+3)%4;
-	var third = (k+1)%4;
+	var k = Math.round(Math.random() * 2);
+	var second = (k+2)%3;
+	var third = (k+1)%3;
+	$('#oldBtnaText').text(riddle[k+1]);
+	$('#oldBtnbText').text(riddle[second+1]);
+	$('#oldBtncText').text(riddle[third+1]);
 	localStorage.setItem("choice_a", k);
 	localStorage.setItem("choice_b", second);
 	localStorage.setItem("choice_c", third);
-	$('#oldBtnaText').text(riddle[k]);
-	$('#oldBtnbText').text(riddle[second]);
-	$('#oldBtncText').text(riddle[third]);
-//	var answer_a = localStorage.getItem("answer_" + n + k);
-//	var answer_b = localStorage.getItem("answer_" + n + second);
-//	var answer_c = localStorage.getItem("answer_" + n + third);
 }
 
 //Info about timer: http://keith-wood.name/countdown.html
 //Function to start te countdown timer
-function start_timer() {
-	$('#countdowntimer').countdown({until: +30, format: 'S', onExpiry: liftOff});
+function startTimer() {
+	$('#countdowntimer').countdown({until: +30, format: 'S', onExpiry: timesUp});
 }
 
 //Function that handle's the time's up
-function liftOff() { 
+function timesUp() { 
 	var r=confirm("Time's up!");
 	if (r==true) {
 		$.mobile.changePage("#emotionspage");
 		$('#countdowntimer').countdown('destroy');
 	}
-	else {
-	}
+	else {}
 } 
 
 //Function to detract time from countdown timer
@@ -291,18 +238,11 @@ function detract(n){
 	$('#countdowntimer').countdown('option', {until: newuntil});
 }		
 
-//Function that loads the riddle image (n is the number of the riddle)
-//function get_image(n){
-//	var image = localStorage.getItem("riddle_" + n);
-//	$('#riddle_image').attr("src",image);
-//}
-
-
-//Function that checks wether the answer was good or bad
-function check_answer(n){
+//Function that checks whether the answer was good or bad
+function checkAnswer(n){
 	var check = localStorage.getItem("choice_" + n);
 	if(check == 0) {
-		answer_good();
+		answerGood();
 	} 
 	else{
 		$('#oldBtn' + n + 'Text').text("FALSE");
@@ -310,58 +250,38 @@ function check_answer(n){
 	}
 }
 
+////Function that checks whether the answer was good or bad
+//function checkAnswer(n){
+////	var check = localStorage.getItem("choice_" + n);
+//	if(eval("choice_" + n) == 0) {
+//		answerGood();
+//	} 
+//	else{
+//		$('#oldBtn' + n + 'Text').text("FALSE");
+//		detract(5);
+//	}
+//}
+
 //Function that alerts the user when he solved the riddle
-function answer_good(){
+function answerGood(){
 	var r=confirm("You were correct!");
 	if (r==true) {
 		$.mobile.changePage("#emotionspage");
-		reset_sliders();
+		resetSliders();
 		var periods = $('#countdowntimer').countdown('getTimes'); 
 		time = periods[6];
 		localStorage.setItem("riddletime_" + counter, time);
-//		counter++;
-		storeEmotions();
+		storeEmotionsDB();
 		$('#countdowntimer').countdown('destroy');
 	}
 	else {
 	}
 }
 
-//Function that loads the stats and the graph
-function create_stats(){
-	getData();
-	create_svg();
-}
-//Function that puts all the collected data in the dataset array
-//function get_data(){
-//	dataset = new Array(counter);
-//	for (j=0; j<counter; j++){
-//		dataset[j] = new Array(5);
-//		dataset[j][0] = localStorage.getItem("happy_sad_" + j);
-//		dataset[j][1] = localStorage.getItem("relaxed_stressed_" + j);
-//		dataset[j][2] = localStorage.getItem("energetic_slow_ " + j);
-//		dataset[j][3] = localStorage.getItem("confidentinsecure_" + j);
-//		dataset[j][4] = localStorage.getItem("riddletime_" + j);
-//	}
-////	localStorage.setItem("tester", dataset);
-//}
-
-//var dataset2 = [
-//[40, 70, 75, 50, 10],
-//[20, 65, 40, 50, 75]
-//];
-//localStorage.setItem("testdataset2", dataset2);
-
-//var datates = d3.range(500).map(function() {
-//return {xloc: 0, yloc: 0, xvel: 0, yvel: 0};
-//});
-//localStorage.set("testest",datates);
-
-//Function that creates the graph using d3
-
 var svg;
 
-function create_svg(){
+//Function that creates the graph using d3 and svg (android 2.3 doesn't support svg!, so try to use canvas or so)
+function createSvg(){
 	var w = 300;
 	var h = 300;
 	var padding = 30; //Space between axes and dots
@@ -388,7 +308,6 @@ function create_svg(){
 //	context.fill();
 //	context.stroke();
 //	});
-
 
 	var xAxis = d3.svg.axis()
 	.scale(riddleScale)
@@ -429,51 +348,19 @@ function create_svg(){
 	.call(yAxis);
 }
 
-function converse_svg() {
-
-	container = $("#graph");
-
-	//Create a new canvas to hold our rendering
-	var canvas = document.createElement("canvas");
-	canvas.setAttribute("style", "height:" + container.height() + ";width:" + container.width() + ";");
-
-	//Use canvg to convert SVG to canvas and render the results
-	canvg(canvas, svg);
-
-	//Add the new canvas to the page
-	container.append(canvas);
-}
-
+//Function to remove the svg
 function remove_graph(){
 	svg.remove();
 }
 
-// Database creëren via PhoneGap
-//document.addEventListener("deviceready", onDeviceReady, false); //Nodig bij PhoneGap
-//function onDeviceReady() {
-//	var db = window.openDatabase("Database", "1.0", "PhoneGap Demo", 200000);
-//	db.transaction(populateDB, errorCB, successCB);
-//}
-//
-//
-//
-//// Populate the database 
-////
-//function populateDB(tx) {
-//	tx.executeSql('DROP TABLE IF EXISTS DEMO');
-//	tx.executeSql('CREATE TABLE IF NOT EXISTS DEMO (id unique, data)');
-//	tx.executeSql('INSERT INTO DEMO (id, data) VALUES (1, "First row")');
-//	tx.executeSql('INSERT INTO DEMO (id, data) VALUES (2, "Second row")');
-//}
-//
-//// Transaction error callback
-////
-//function errorCB(tx, err) {
-//	alert("Error processing SQL: "+err);
-//}
-//
-//// Transaction success callback
-////
-//function successCB() {
-//	alert("success!");
-//}
+//Function to converse an svg to a format supported by android 2.3 browser -> This function is not yet in use.
+function converse_svg() {
+	container = $("#graph");
+	//Create a new canvas to hold our rendering
+	var canvas = document.createElement("canvas");
+	canvas.setAttribute("style", "height:" + container.height() + ";width:" + container.width() + ";");
+	//Use canvg to convert SVG to canvas and render the results
+	canvg(canvas, svg);
+	//Add the new canvas to the page
+	container.append(canvas);
+}
