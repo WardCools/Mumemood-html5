@@ -128,7 +128,7 @@
 						data-icon="gear" data-iconpos="notext">Properties</a></li>
 					<li><a href="#statisticspage" onclick="createStats()"
 						data-role="button" data-icon="statistics" data-iconpos="notext">Statistics</a></li>
-					<li><a href="#riddlepage" onclick="saveEmotions()"
+					<li><a href="#riddlepage" onclick="saveEmotionsAndLoadRiddle()"
 						id="saveemotions" data-role="button" data-icon="arrow-r"
 						data-iconpos="notext">Go!</a></li>
 				</ul>
@@ -175,18 +175,14 @@
 			data-id="myfooter">
 			<div data-role="navbar">
 				<ul>
-					<li><a href="#emotionspage" data-role="button"
+					<li><a onclick="returnFromRiddlePage()" data-role="button"
 						data-icon="arrow-l" data-iconpos="notext">Back</a></li>
-					<li><a onclick="detract(5)" data-role="button"
-						data-icon="arrow-l" data-iconpos="notext">-5</a></li>
-					<li><a onclick="getRiddle()" data-role="button"
-						data-icon="arrow-r" data-iconpos="notext">New riddle</a></li>
-
 				</ul>
-
+				
 			</div>
+			
 		</div>
-
+		
 	</div>
 
 	<div data-role="page" id="statisticspage">

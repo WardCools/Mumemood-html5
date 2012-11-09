@@ -10,10 +10,10 @@ localStorage.clear();
 //});
 
 //Array that contains all the data
-var dataset;
 var db;
 var dataTables = ["id", "feeling_1", "feeling_2", "feeling_3", "feeling_4", "time"];
 var riddleTables = ["riddle", "answer_1", "answer_2", "answer_3", "answer_4"];
+var propertiesTables = ["age", "sex"];
 var riddles = ["images/usa3.jpg", "images/india.jpg", "images/france.jpg", "images/uk.jpg"];
 var answers_1 = ["USA", "India", "France", "UK"];
 var answers_2 = ["Russia", "Belarus", "Netherlands", "China"];
@@ -25,10 +25,9 @@ var feeling_2 = 50;
 var feeling_3 = 50;
 var feeling_4 = 50;
 var time = 0;
+var dataset;
 var riddle = new Array(5);
-var choice_a;
-var choice_b;
-var choice_c;
+var svg;
 
 window.onload = init();
 //Function that contains everything that should be done when starting the app
@@ -72,7 +71,8 @@ function initDatabase() {
 			db = window.openDatabase(shortName, version, displayName, maxSize);
 			db.transaction(storeRiddles, errorCB, successCB);
 			clearData();
-			db.transaction(createDataTables, errorCB, successCB);
+			db.transaction(createDataTable, errorCB, successCB);
+			db.transaction(createPropertiesTable, errorCB, successCB);
 //			storeEmotionsDB();
 		}
 	} catch(e) {
@@ -86,14 +86,13 @@ function initDatabase() {
 	}
 }
 
-//Transaction error callback
+//Transaction error callback, called when a db transaction returns an error
 function errorCB(tx, err) {
 	alert("Error processing SQL: "+err);
 }
 
-//Transaction success callback
+//Transaction success callback, 
 function successCB() {
-//	alert("success!");
 }
 
 //Creates the IQMOODRIDDLES table and stores the riddles in it
@@ -105,9 +104,24 @@ function storeRiddles(transaction){
 	}
 }
 
-//Creates he IQMOODDATA
-function createDataTables(transaction){
+//Deletes the IQMOODDATA table
+function clearData(){
+	db.transaction(
+			function (transaction) {
+				transaction.executeSql('DROP TABLE IF EXISTS IQMOODDATA');
+			}, errorCB, successCB
+	);
+}
+
+//Creates the IQMOODDATA table
+function createDataTable(transaction){
 	transaction.executeSql('CREATE TABLE IF NOT EXISTS IQMOODDATA(' + dataTables[0] + ' INTEGER UNIQUE,' + dataTables[1] + ' INTEGER,' + dataTables[2] + ' INTEGER, ' + dataTables[3] + ' INTEGER, ' + dataTables[4] + ' INTEGER, ' + dataTables[5] + ' INTEGER);');
+}
+
+//Creates the IQMOODPROPERTIES table
+function createPropertiesTable(transaction){
+	transaction.executeSql('DROP TABLE IF EXISTS IQMOODPROPERTIES');
+	transaction.executeSql('CREATE TABLE IF NOT EXISTS IQMOODPROPERTIES(' + propertiesTables[0] + ' TEXT,' + propertiesTables[1] + ' TEXT);');
 }
 
 //Stores the emotions stored in the counter, feeling1-4 and time variables
@@ -120,11 +134,11 @@ function storeEmotionsDB(){
 	);
 }
 
-//Deletes the IQMOODDATA table
-function clearData(){
+//Stores the properties given as arguments
+function storePropertiesDB(age, sex){
 	db.transaction(
 		function (transaction) {
-			transaction.executeSql('DROP TABLE IF EXISTS IQMOODDATA');
+			transaction.executeSql("INSERT INTO IQMOODPROPERTIES(" + propertiesTables[0] + ", " + propertiesTables[1] + ") VALUES (?, ?)", [age, sex]);
 		}, errorCB, successCB
 	);
 }
@@ -137,7 +151,6 @@ function queryStatsDB(transaction) {
 	transaction.executeSql('SELECT * FROM IQMOODDATA',[], queryStatsSuccess, errorCB);
 }
 function queryStatsSuccess(transaction, results) {
-//	alert(results.rows.length);
 	dataset = new Array(results.rows.length);
 	for(var i = 0; i < results.rows.length; i++){
 		dataset[i] = new Array(5);
@@ -151,7 +164,7 @@ function queryStatsSuccess(transaction, results) {
 }
 
 //Gets a random riddle and its answers from the IQMOODRIDDLES table and stores it in the riddle array
-function getRiddle(){
+function getNewRiddle(){
 	db.transaction(queryRiddleDB, errorCB);
 }
 function queryRiddleDB(transaction) {
@@ -164,42 +177,28 @@ function queryRiddleSuccess(transaction, results) {
 	riddle[2] = results.rows.item(ranNumber).answer_2;//riddleTables[2];
 	riddle[3] = results.rows.item(ranNumber).answer_3;//riddleTables[3];
 	riddle[4] = results.rows.item(ranNumber).answer_4;//riddleTables[4];
-	$("#riddle_image").attr("src",riddle[0]);
-	setAnswers();
-	startTimer();
-	$("#countdowntimer").countdown('option', {until: +30});
+	$("#riddle_image").attr("src",riddle[0]);//sets a new riddle image
+	setAnswers();//sets the possible answers
+	startTimer();//starts the timer
 }
 
 //Function for saving the birthyear and sex
 function saveProperties() {
-	localStorage.setItem("age", $('#age').val())
 	if($('#radio-choice-m').is(':checked')){
-		localStorage.setItem("sex", $('#radio-choice-m').val());
+		storePropertiesDB($('#age').val(), $('#radio-choice-m').val());
 	}
 	else if ($('#radio-choice-f').is(':checked')){
-		localStorage.setItem("sex", $('#radio-choice-f').val());
+		storePropertiesDB($('#age').val(), $('#radio-choice-f').val());
 	}
 }	
 
-//Function that resets the sliders
-function resetSliders(){
-	$('#slider-1').val(50);
-	$('#slider-1').slider('refresh');
-	$('#slider-2').val(50);
-	$('#slider-2').slider('refresh');
-	$('#slider-3').val(50);
-	$('#slider-3').slider('refresh');
-	$('#slider-4').val(50);
-	$('#slider-4').slider('refresh');
-}
-
-//Function for saving the emotions
-function saveEmotions() {
+//Function for saving the emotions and loading a new riddle 
+function saveEmotionsAndLoadRiddle() {
 	feeling_1 = $('#slider-1').val();
 	feeling_2 = $('#slider-2').val();
 	feeling_3 = $('#slider-3').val();
 	feeling_4 = $('#slider-4').val();
-	getRiddle();
+	getNewRiddle();
 }
 
 //Function that loads the answers for the riddle and puts that in a random order, NOG NIET VOLLEDIG RANDOM
@@ -223,7 +222,7 @@ function startTimer() {
 
 //Function that handle's the time's up
 function timesUp() { 
-	var r=confirm("Time's up!");
+	var r = confirm("Time's up!");
 	if (r==true) {
 		$.mobile.changePage("#emotionspage");
 		$('#countdowntimer').countdown('destroy');
@@ -231,14 +230,7 @@ function timesUp() {
 	else {}
 } 
 
-//Function to detract time from countdown timer
-function detract(n){
-	var periods = $('#countdowntimer').countdown('getTimes'); 
-	var newuntil = periods[6] - n;
-	$('#countdowntimer').countdown('option', {until: newuntil});
-}		
-
-//Function that checks whether the answer was good or bad
+//Function that checks whether the answer was good or bad (is called when a user presses one of the answers)
 function checkAnswer(n){
 	var check = localStorage.getItem("choice_" + n);
 	if(check == 0) {
@@ -250,19 +242,14 @@ function checkAnswer(n){
 	}
 }
 
-////Function that checks whether the answer was good or bad
-//function checkAnswer(n){
-////	var check = localStorage.getItem("choice_" + n);
-//	if(eval("choice_" + n) == 0) {
-//		answerGood();
-//	} 
-//	else{
-//		$('#oldBtn' + n + 'Text').text("FALSE");
-//		detract(5);
-//	}
-//}
+//Function to detract time from countdown timer
+function detract(n){
+	var periods = $('#countdowntimer').countdown('getTimes'); 
+	var newuntil = periods[6] - n;
+	$('#countdowntimer').countdown('option', {until: newuntil});
+}		
 
-//Function that alerts the user when he solved the riddle
+//Function that alerts the user when he solved the riddle, resets the sliders and stores the emotions and time
 function answerGood(){
 	var r=confirm("You were correct!");
 	if (r==true) {
@@ -270,7 +257,6 @@ function answerGood(){
 		resetSliders();
 		var periods = $('#countdowntimer').countdown('getTimes'); 
 		time = periods[6];
-		localStorage.setItem("riddletime_" + counter, time);
 		storeEmotionsDB();
 		$('#countdowntimer').countdown('destroy');
 	}
@@ -278,7 +264,22 @@ function answerGood(){
 	}
 }
 
-var svg;
+//Function that resets the sliders
+function resetSliders(){
+	$('#slider-1').val(50);
+	$('#slider-1').slider('refresh');
+	$('#slider-2').val(50);
+	$('#slider-2').slider('refresh');
+	$('#slider-3').val(50);
+	$('#slider-3').slider('refresh');
+	$('#slider-4').val(50);
+	$('#slider-4').slider('refresh');
+}
+
+function returnFromRiddlePage(){
+	$.mobile.changePage("#emotionspage");
+	$('#countdowntimer').countdown('destroy');
+}
 
 //Function that creates the graph using d3 and svg (android 2.3 doesn't support svg!, so try to use canvas or so)
 function createSvg(){
@@ -291,7 +292,7 @@ function createSvg(){
 	var happysadScale = d3.scale.linear()
 	.domain([0, 100])//((d3.max(dataset2, function(d) { return d[0]; })) + 20) ])
 	.range([h-padding, padding]);
-
+//Attempt to use a canvas instead of an svg for the graph (failed for now)
 //	var canvas = d3.select("#graph")
 //	.append("canvas")
 //	.attr("width", w)
@@ -308,59 +309,54 @@ function createSvg(){
 //	context.fill();
 //	context.stroke();
 //	});
-
 	var xAxis = d3.svg.axis()
-	.scale(riddleScale)
-	.orient("bottom")
-	.ticks(10);
+		.scale(riddleScale)
+		.orient("bottom")
+		.ticks(10);
 	var yAxis = d3.svg.axis()
-	.scale(happysadScale)
-	.orient("left")
-	.ticks(10);
-
+		.scale(happysadScale)
+		.orient("left")
+		.ticks(10);
 	svg = d3.select("#graph")
-	.append("svg")
-	.attr("width", w)
-	.attr("height", h)
-	.attr("align", "center");
-
+		.append("svg")
+		.attr("width", w)
+		.attr("height", h)
+		.attr("align", "center");
 	svg.selectAll("circle")
-	.data(dataset)
-	.enter()
-	.append("circle")
-	.attr("cx", function(d) {
-		return riddleScale(d[4]);
-	})
-	.attr("cy", function(d) {
-		return happysadScale(d[0]);
-	})
-	.attr("r", 10)
-	.attr("fill", "black");
-
-
+		.data(dataset)
+		.enter()
+		.append("circle")
+		.attr("cx", function(d) {
+			return riddleScale(d[4]);
+		})
+		.attr("cy", function(d) {
+			return happysadScale(d[0]);
+		})
+		.attr("r", 10)
+		.attr("fill", "black");
 	svg.append("g")
-	.attr("class", "axis")
-	.attr("transform", "translate(0," + (w - padding) + ")")
-	.call(xAxis);
+		.attr("class", "axis")
+		.attr("transform", "translate(0," + (w - padding) + ")")
+		.call(xAxis);
 	svg.append("g")
-	.attr("class", "axis")
-	.attr("transform", "translate(" + padding + ",0)")
-	.call(yAxis);
+		.attr("class", "axis")
+		.attr("transform", "translate(" + padding + ",0)")
+		.call(yAxis);
 }
 
 //Function to remove the svg
-function remove_graph(){
+function removeGraph(){
 	svg.remove();
 }
 
-//Function to converse an svg to a format supported by android 2.3 browser -> This function is not yet in use.
-function converse_svg() {
-	container = $("#graph");
-	//Create a new canvas to hold our rendering
-	var canvas = document.createElement("canvas");
-	canvas.setAttribute("style", "height:" + container.height() + ";width:" + container.width() + ";");
-	//Use canvg to convert SVG to canvas and render the results
-	canvg(canvas, svg);
-	//Add the new canvas to the page
-	container.append(canvas);
-}
+////Function to converse an svg to a format supported by android 2.3 browser -> This function is not yet in use.
+//function converse_svg() {
+//	container = $("#graph");
+//	//Create a new canvas to hold our rendering
+//	var canvas = document.createElement("canvas");
+//	canvas.setAttribute("style", "height:" + container.height() + ";width:" + container.width() + ";");
+//	//Use canvg to convert SVG to canvas and render the results
+//	canvg(canvas, svg);
+//	//Add the new canvas to the page
+//	container.append(canvas);
+//}
