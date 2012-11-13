@@ -232,14 +232,10 @@ function setAnswers(n){
 //Function to start te countdown timer
 function startTimer() {
 //	$('#countdowntimer').countdown({until: +30, format: 'S', onExpiry: timesUp});
-	var date = new Date();
-	var nseconds = date.getSeconds();
-	date.setSeconds(nseconds);
-//	date.setDate(date.getDate()+5);
-	$('#countuptimer').countdown({since: date, format: 'S'});	
+	$('#countuptimer').countdown({since: 0, format: 'S'});	
 }
 
-//Function that handle's the time's up
+////Function that handle's the time's up
 //function timesUp() { 
 //	var r = confirm("Time's up!");
 //	if (r==true) {
@@ -263,7 +259,7 @@ function checkAnswer(n){
 	}
 }
 
-//Function to detract time from countdown timer
+////Function to detract time from countdown timer
 //function detract(n){
 //	var periods = $('#countuptimer').countdown('getTimes'); 
 //	var newuntil = periods[6] - n;
@@ -272,13 +268,8 @@ function checkAnswer(n){
 
 function addSeconds(n){
 	var periods = $('#countuptimer').countdown('getTimes');
-	var newuntil = periods[6] + n;
-	localStorage.setItem("newuntil", newuntil);
-	var newsince = newuntil.toString;
-	var newDate = new Date();
-	newDate.setDate(myDate.getDate()+5);
-	localStorage.setItem("newsince", newsince);
-	$('#countuptimer').countdown('option', {since: newDate});
+	var newSince = periods[6] + n;
+	$('#countuptimer').countdown('option', {since: newSince});
 }		
 
 //Function that alerts the user when he solved the riddle, resets the sliders and stores the emotions and time
@@ -361,7 +352,7 @@ function createSvg(emotion){
 		.attr("cy", function(d) {
 			return emotionScale(d[emotion]);
 		})
-		.attr("r", 10)
+		.attr("r", 5)
 		.attr("fill", "black");
 	svg.append("g")
 		.attr("class", "axis")
