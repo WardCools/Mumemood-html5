@@ -160,7 +160,21 @@ function queryStatsSuccess(transaction, results) {
 		dataset[i][3] = results.rows.item(i).feeling_4;//dataTables[4];
 		dataset[i][4] = results.rows.item(i).time;//dataTables[5];
 	}
-	createSvg();
+	var emotion = 0;
+	if($('#radio-choice-0').is(':checked')){
+		emotion = 0;
+	}
+	else if($('#radio-choice-1').is(':checked')){
+		emotion = 1;
+	}
+	else if($('#radio-choice-2').is(':checked')){
+		emotion = 2;
+	}
+	else if($('#radio-choice-3').is(':checked')){
+		emotion = 3;
+	}
+	createSvg(emotion);
+//	$('#graphpopup').popup('close');
 }
 
 //Gets a random riddle and its answers from the IQMOODRIDDLES table and stores it in the riddle array
@@ -217,18 +231,24 @@ function setAnswers(n){
 //Info about timer: http://keith-wood.name/countdown.html
 //Function to start te countdown timer
 function startTimer() {
-	$('#countdowntimer').countdown({until: +30, format: 'S', onExpiry: timesUp});
+//	$('#countdowntimer').countdown({until: +30, format: 'S', onExpiry: timesUp});
+	var date = new Date();
+	var nseconds = date.getSeconds();
+	date.setSeconds(nseconds);
+//	date.setDate(date.getDate()+5);
+	$('#countuptimer').countdown({since: date, format: 'S'});	
 }
 
 //Function that handle's the time's up
-function timesUp() { 
-	var r = confirm("Time's up!");
-	if (r==true) {
-		$.mobile.changePage("#emotionspage");
-		$('#countdowntimer').countdown('destroy');
-	}
-	else {}
-} 
+//function timesUp() { 
+//	var r = confirm("Time's up!");
+//	if (r==true) {
+//		$.mobile.changePage("#emotionspage");
+//		$('#countdowntimer').countdown('destroy');;
+//		$('#countuptimer').countdown('destroy');		
+//	}
+//	else {}
+//} 
 
 //Function that checks whether the answer was good or bad (is called when a user presses one of the answers)
 function checkAnswer(n){
@@ -238,27 +258,42 @@ function checkAnswer(n){
 	} 
 	else{
 		$('#oldBtn' + n + 'Text').text("FALSE");
-		detract(5);
+//		detract(5);
+		addSeconds(5);
 	}
 }
 
 //Function to detract time from countdown timer
-function detract(n){
-	var periods = $('#countdowntimer').countdown('getTimes'); 
-	var newuntil = periods[6] - n;
-	$('#countdowntimer').countdown('option', {until: newuntil});
+//function detract(n){
+//	var periods = $('#countuptimer').countdown('getTimes'); 
+//	var newuntil = periods[6] - n;
+//	$('#countuptimer').countdown('option', {until: newuntil});
+//}	
+
+function addSeconds(n){
+	var periods = $('#countuptimer').countdown('getTimes');
+	var newuntil = periods[6] + n;
+	localStorage.setItem("newuntil", newuntil);
+	var newsince = newuntil.toString;
+	var newDate = new Date();
+	newDate.setDate(myDate.getDate()+5);
+	localStorage.setItem("newsince", newsince);
+	$('#countuptimer').countdown('option', {since: newDate});
 }		
 
 //Function that alerts the user when he solved the riddle, resets the sliders and stores the emotions and time
 function answerGood(){
-	var r=confirm("You were correct!");
+	var periods = $('#countuptimer').countdown('getTimes');
+//	var periods = $('#countdowntimer').countdown('getTimes');
+	var r=confirm("You were correct!" + "\n" + "Your time: " + periods[6]);
 	if (r==true) {
 		$.mobile.changePage("#emotionspage");
 		resetSliders();
-		var periods = $('#countdowntimer').countdown('getTimes'); 
 		time = periods[6];
 		storeEmotionsDB();
-		$('#countdowntimer').countdown('destroy');
+//		$('#countdowntimer').countdown('destroy');
+		$('#countuptimer').countdown('destroy');
+		
 	}
 	else {
 	}
@@ -281,40 +316,34 @@ function returnFromRiddlePage(){
 	$('#countdowntimer').countdown('destroy');
 }
 
+function chooseStats(){
+	removeGraph();
+	createStats();
+	$('#graphpopup').popup('close');
+}
+
 //Function that creates the graph using d3 and svg (android 2.3 doesn't support svg!, so try to use canvas or so)
-function createSvg(){
+function createSvg(emotion){
+	var feeling;
+	if(emotion == 0) feeling = "Happy-Sad";
+	else if(emotion == 1) feeling = "Relaxed-Stressed";
+	else if(emotion == 2) feeling = "Energetic-Slow";
+	else if(emotion == 3) feeling = "Confident-Insecure";
 	var w = 300;
 	var h = 300;
-	var padding = 30; //Space between axes and dots
+	var padding = 50; //Space between axes and dots
 	var riddleScale = d3.scale.linear()
 	.domain([0, 35])//((d3.max(dataset2, function(d) { return d[4]; })) + 20) ])
 	.range([padding, w-padding*2]);
-	var happysadScale = d3.scale.linear()
+	var emotionScale = d3.scale.linear()
 	.domain([0, 100])//((d3.max(dataset2, function(d) { return d[0]; })) + 20) ])
 	.range([h-padding, padding]);
-//Attempt to use a canvas instead of an svg for the graph (failed for now)
-//	var canvas = d3.select("#graph")
-//	.append("canvas")
-//	.attr("width", w)
-//	.attr("height", h);
-
-//	var context = canvas.node().getContext("2d");
-//	context.fillStyle = "black";
-//	context.strokeStyle = "#666";
-//	context.strokeWidth = 1.5;
-
-//	dataset.forEach(function(d) {
-//	context.beginPath();
-//	context.arc(riddleScale(d[4]), happysadScale(d[0]), 10, 0, 2*Math.PI);
-//	context.fill();
-//	context.stroke();
-//	});
 	var xAxis = d3.svg.axis()
 		.scale(riddleScale)
 		.orient("bottom")
 		.ticks(10);
 	var yAxis = d3.svg.axis()
-		.scale(happysadScale)
+		.scale(emotionScale)
 		.orient("left")
 		.ticks(10);
 	svg = d3.select("#graph")
@@ -330,7 +359,7 @@ function createSvg(){
 			return riddleScale(d[4]);
 		})
 		.attr("cy", function(d) {
-			return happysadScale(d[0]);
+			return emotionScale(d[emotion]);
 		})
 		.attr("r", 10)
 		.attr("fill", "black");
@@ -342,21 +371,21 @@ function createSvg(){
 		.attr("class", "axis")
 		.attr("transform", "translate(" + padding + ",0)")
 		.call(yAxis);
+	svg.append("svg:text")
+	    .attr("x", w - 40)
+	    .attr("y", h - 15)
+	    .attr("text-anchor", "end")
+	    .text("time");
+	svg.append("svg:text")
+	    .attr("y", 10)
+	    .attr("x", 0)
+	    .attr("text-anchor", "end")
+	    .attr("dy", ".75em")
+	    .attr("transform", "rotate(-90)")
+	    .text(feeling);
 }
 
 //Function to remove the svg
 function removeGraph(){
 	svg.remove();
 }
-
-////Function to converse an svg to a format supported by android 2.3 browser -> This function is not yet in use.
-//function converse_svg() {
-//	container = $("#graph");
-//	//Create a new canvas to hold our rendering
-//	var canvas = document.createElement("canvas");
-//	canvas.setAttribute("style", "height:" + container.height() + ";width:" + container.width() + ";");
-//	//Use canvg to convert SVG to canvas and render the results
-//	canvg(canvas, svg);
-//	//Add the new canvas to the page
-//	container.append(canvas);
-//}

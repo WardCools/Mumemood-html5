@@ -10,6 +10,7 @@
 <!-- <link rel="stylesheet" href="style/jquery.mobile-1.2.0.min.css"></link> -->
 <link rel="stylesheet" href="style/jquery.countdown.css"></link>
 <link rel="stylesheet" href='style/iqmood.css'></link>
+ <link rel="stylesheet" href="style/iqmood_themeroller.css" />
 
 <!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
 	<script type="text/javascript" src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.js"></script>
@@ -26,58 +27,6 @@
 </head>
 
 <body>
-
-	<div data-role="page" id="propertiespage">
-
-		<div data-role="header">
-			<h2>PROPERTIES</h2>
-		</div>
-
-		<div data-role="content">
-
-			<div align="center">
-				<img id="properties_image"
-					src="http://wdfyfe.files.wordpress.com/2012/07/puzzle11.jpg"
-					alt="puzzle" style="height: 100px; width: auto">
-			</div>
-
-			<div data-role="fieldcontain" align="center">
-				<fieldset data-role="controlgroup" data-type="horizontal">
-
-					<label for="age">AGE</label> 
-					<input type="text" name="age"
-						id="age" value="" />
-
-				</fieldset>
-			</div>
-
-			<div data-role="fieldcontain" align="center">
-				<fieldset data-role="controlgroup" data-type="horizontal">
-
-					<label for="test">SEX</label>
-
-					<div id="test" align="center">
-						<input type="radio" name="sex" id="radio-choice-m" value="male" />
-						<label for="radio-choice-m">M</label> <input type="radio"
-							name="sex" id="radio-choice-f" value="female" /> <label
-							for="radio-choice-f">F</label>
-					</div>
-
-				</fieldset>
-			</div>
-		</div>
-
-		<div data-role="footer" class="ui-bar" data-position="fixed">
-			<div data-role="navbar">
-				<ul>
-					<li><a href="#emotionspage" onclick="saveProperties()"
-						data-role="button" id="prop_go" data-icon="arrow-r"
-						data-transition="fade" data-id="myfooter">GO!</a></li>
-				</ul>
-			</div>
-		</div>
-
-	</div>
 
 	<div data-role="page" id="emotionspage">
 
@@ -127,11 +76,62 @@
 				<ul>
 					<li><a href="#propertiespage" data-role="button"
 						data-icon="gear" data-iconpos="notext">Properties</a></li>
-					<li><a href="#statisticspage" onclick="createStats()"
+					<li><a onclick="createStats()" href="#statisticspage" 
 						data-role="button" data-icon="statistics" data-iconpos="notext">Statistics</a></li>
-					<li><a href="#riddlepage" onclick="saveEmotionsAndLoadRiddle()"
-						id="saveemotions" data-role="button" data-icon="arrow-r"
-						data-iconpos="notext">Go!</a></li>
+					<li><a href="#riddlepage"
+						onclick="saveEmotionsAndLoadRiddle()" id="saveemotions"
+						data-role="button" data-icon="arrow-r" data-iconpos="notext">Go!</a></li>
+				</ul>
+			</div>
+		</div>
+
+	</div>
+
+	<div data-role="page" id="propertiespage">
+
+		<div data-role="header">
+			<h2>PROPERTIES</h2>
+		</div>
+
+		<div data-role="content">
+
+			<div align="center">
+				<img id="properties_image"
+					src="http://wdfyfe.files.wordpress.com/2012/07/puzzle11.jpg"
+					alt="puzzle" style="height: 100px; width: auto">
+			</div>
+
+			<div data-role="fieldcontain" align="center">
+				<fieldset data-role="controlgroup" data-type="horizontal">
+
+					<label for="age">AGE</label> <input type="text" name="age" id="age"
+						value="" />
+
+				</fieldset>
+			</div>
+
+			<div data-role="fieldcontain" align="center">
+				<fieldset data-role="controlgroup" data-type="horizontal">
+
+					<label for="test">SEX</label>
+
+					<div id="test" align="center">
+						<input type="radio" name="sex" id="radio-choice-m" value="male" />
+						<label for="radio-choice-m">M</label> <input type="radio"
+							name="sex" id="radio-choice-f" value="female" /> <label
+							for="radio-choice-f">F</label>
+					</div>
+
+				</fieldset>
+			</div>
+		</div>
+
+		<div data-role="footer" class="ui-bar" data-position="fixed">
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#emotionspage" onclick="saveProperties()"
+						data-role="button" id="prop_go" data-icon="arrow-r"
+						data-transition="fade" data-id="myfooter">GO!</a></li>
 				</ul>
 			</div>
 		</div>
@@ -148,8 +148,7 @@
 
 
 			<div align="center">
-				<img id="riddle_image" src=""
-					alt="A riddle should appear here..."
+				<img id="riddle_image" src="" alt="A riddle should appear here..."
 					style="height: 175px; width: auto">
 			</div>
 
@@ -169,6 +168,8 @@
 			</div>
 
 			<div id="countdowntimer" align="center"></div>
+			
+			<div id="countuptimer" align="center"></div>
 
 		</div>
 
@@ -179,11 +180,11 @@
 					<li><a onclick="returnFromRiddlePage()" data-role="button"
 						data-icon="arrow-l" data-iconpos="notext">Back</a></li>
 				</ul>
-				
+
 			</div>
-			
+
 		</div>
-		
+
 	</div>
 
 	<div data-role="page" id="statisticspage">
@@ -192,13 +193,37 @@
 			<h1>Statistics</h1>
 		</div>
 
-		<div data-role="content" id="graph" align="center"></div>
+		<div data-role="content" id="graph" align="center">
+
+			<div data-role="popup" id="graphpopup" class="ui-content"
+				data-theme="a" data-overlay-theme="a" data-rel="back">
+				
+				<h2>Choose your emotion</h2>
+				<div data-role="fieldcontain">
+					<fieldset data-role="controlgroup">
+						<input type="radio" name="radio-choice" id="radio-choice-0"
+							value="choice-0" checked="checked" /> <label
+							for="radio-choice-0">Happy-Sad</label> <input type="radio"
+							name="radio-choice" id="radio-choice-1" value="choice-1" /> <label
+							for="radio-choice-1">Relaxed-Stressed</label> <input type="radio"
+							name="radio-choice" id="radio-choice-2" value="choice-2" /> <label
+							for="radio-choice-2">Energetic-Slow</label> <input type="radio"
+							name="radio-choice" id="radio-choice-3" value="choice-3" /> <label
+							for="radio-choice-3">Confident-Insecure</label>
+					</fieldset>
+				</div>
+				<button onclick="chooseStats()" data-theme="b">See graph</button>
+			</div>
+		</div>
 
 		<div data-role="footer" class="ui-bar" data-position="fixed">
 			<div data-role="navbar">
 				<ul>
 					<li><a href="#emotionspage" data-role="button"
-						onclick="removeGraph()" id="prop_go" data-icon="arrow-l">BACK</a></li>
+						onclick="removeGraph()" id="graph_back" data-icon="arrow-l">BACK</a></li>
+					<li><a href="#graphpopup" data-role="button"
+						data-position-to="window" data-rel="popup" id="graph_popup"
+						data-icon="arrow-l">Choose stats</a></li>
 				</ul>
 
 			</div>
