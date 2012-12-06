@@ -2,90 +2,130 @@
 <html>
 <head>
 <title>IQMood</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link rel="stylesheet"
-	href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!--online-->
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+
+<!--offline-->
 <!-- <link rel="stylesheet" href="style/jquery.mobile-1.2.0.min.css"></link> -->
 <link rel="stylesheet" href="style/jquery.countdown.css"></link>
 <link rel="stylesheet" href='style/iqmood.css'></link>
  <link rel="stylesheet" href="style/iqmood_themeroller.css" />
 
-<!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
-	<script type="text/javascript" src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.js"></script>
-	<script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/canvg.js"></script>
-	<script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script> -->
+<!-- scripts used in this HTML-->
+<script src="js/jquery-1.8.2.min.js"></script>
+<script src="js/jquery.mobile-1.2.0.min.js"></script>
+<script src="js/canvg.js"></script>
+<script src="js/rgbcolor.js"></script>
+<script src="js/d3.v2.js"></script>
+<script src="js/jquery.countdown.js"></script>
+<script src='js/iqmood.js'></script>
+<script src='js/riddles.js'></script>
 
-<script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
-<script type="text/javascript" src="js/jquery.mobile-1.2.0.min.js"></script>
-<script type="text/javascript" src="js/canvg.js"></script>
-<script type="text/javascript" src="js/rgbcolor.js"></script>
-<script type="text/javascript" src="js/d3.v2.js"></script>
-<script type="text/javascript" src="js/jquery.countdown.js"></script>
-<script type="text/javascript" src='js/iqmood.js'></script>
+
+
+
 </head>
 
 <body>
 
+<!--************************-->
+<!--**   PAGE: EMOTIONS   **-->
+<!--************************-->
+
 	<div data-role="page" id="emotionspage">
 
 		<div data-role="header">
+		
 			<h2>HOW ARE YOU?</h2>
+			
 		</div>
 
 		<div data-role="content">
-			<div data-role="fieldcontain" class="ui-hide-label" align="center">
-				<label for="slider-1"></label> <input type="range"
-					name="slider-fill" style="display: none" id="slider-1" value="50"
-					min="0" max="100" data-highlight="true" data-track-theme="b" /> <span
-					class="slider-label left">HAPPY</span> <span
-					class="slider-label right">SAD</span>
+		
+			<div class="ui-hide-label" align="center">
+			
+				<label for="slider-1"></label>
+				<input type="range" name="slider-fill" id="slider-1" style="display: none"  value="50" min="0" max="100" data-track-theme="a" />
+				<span class="slider-label left" style="color:yellow">HAPPY</span>
+				<span class="slider-label right">SAD</span>
+			
 			</div>
+			
 			<br>
-			<div data-role="fieldcontain" class="ui-hide-label" align="center">
-				<label for="slider-2"></label> <input type="range"
-					name="slider-fill" style="display: none" id="slider-2" value="50"
-					min="0" max="100" data-highlight="true" data-track-theme="b" /> <span
-					class="slider-label left">RELAXED</span> <span
-					class="slider-label right">STRESSED</span>
-			</div>
 			<br>
-			<div data-role="fieldcontain" class="ui-hide-label" align="center">
-				<label for="slider-3"></label> <input type="range"
-					name="slider-fill" style="display: none" id="slider-3" value="50"
-					min="0" max="100" data-highlight="true" data-track-theme="b" /> <span
-					class="slider-label left">ENERGETIC</span> <span
-					class="slider-label right">SLOW</span>
-			</div>
 			<br>
-			<div data-role="fieldcontain" class="ui-hide-label" align="center">
-				<label for="slider-4"></label> <input type="range"
-					name="slider-fill" style="display: none" id="slider-4" value="50"
-					min="0" max="100" data-highlight="true" data-track-theme="b" /> <span
-					class="slider-label left">CONFIDENT</span> <span
-					class="slider-label right">INSECURE</span>
+			
+			<div class="ui-hide-label" align="center">
+			
+				<label for="slider-2"></label>
+				<input type="range" name="slider-fill" id="slider-2" style="display: none"  value="50" min="0" max="100" data-track-theme="a" />
+				<span class="slider-label left" style="color:green">RELAXED</span>
+				<span class="slider-label right">STRESSED</span>
+				
 			</div>
+			
+			<br>
+			<br>
+			<br>
+			
+			<div class="ui-hide-label" align="center">
+			
+				<label for="slider-3"></label>
+				<input type="range" name="slider-fill" style="display: none" id="slider-3" value="50" min="0" max="100" data-track-theme="a" />
+				<span class="slider-label left" style="color:red">ENERGETIC</span>
+				<span class="slider-label right">SLOW</span>
+			
+			</div>
+			
+			<br>
+			<br>
+			<br>
+			
+			<div class="ui-hide-label" align="center">
+				
+				<label for="slider-4"></label>
+				<input type="range" name="slider-fill" style="display: none" id="slider-4" value="50" min="0" max="100" /> 
+				<br>
+				<span class="slider-label left" style="color:blue">CONFIDENT</span>
+				<span class="slider-label right">INSECURE</span>
+				
+			</div>
+			
+			<br>
+			<br>
 			<br>
 
 		</div>
 
-		<div data-role="footer" class="ui-bar" data-position="fixed"
-			data-id="myfooter">
-			<div data-role="navbar">
-				<ul>
-					<li><a href="#propertiespage" data-role="button"
-						data-icon="gear" data-iconpos="notext">Properties</a></li>
-					<li><a onclick="createStats()" href="#statisticspage" 
-						data-role="button" data-icon="statistics" data-iconpos="notext">Statistics</a></li>
-					<li><a href="#riddlepage"
-						onclick="saveEmotionsAndLoadRiddle()" id="saveemotions"
-						data-role="button" data-icon="arrow-r" data-iconpos="notext">Go!</a></li>
-				</ul>
-			</div>
+		<div data-role="footer" data-position="fixed" data-id="myfooter" >
+				
+				<div style="display:inline-block; padding-left: 10px;" data-role="controlgroup" data-type="horizontal">
+						
+					<a href="#propertiespage" data-role="button" data-icon="info">Profile</a>
+					<a href="#resultspage" data-role="button" data-icon="star" onclick="createStats()">Results</a>
+					
+				</div>
+				
+				<div style="display:inline-block; padding-right: 10px; float:right; width:40%;">
+	
+				<a href="#riddlepage" data-role="button" width="200px" data-icon="arrow-r" data-iconpos="right" onclick="saveEmotionsAndLoadRiddle()">Go!</a>
+			
+				</div>	
+			
 		</div>
 
 	</div>
+	
+	
+	
+<!--************************-->
+<!--**   PAGE: PROFILE    **-->
+<!--************************-->
+	
+	
 
 	<div data-role="page" id="propertiespage">
 
@@ -137,6 +177,15 @@
 		</div>
 
 	</div>
+	
+	
+	
+	
+<!--************************-->
+<!--**   PAGE: RIDDLES    **-->
+<!--************************-->
+
+
 
 	<div data-role="page" id="riddlepage">
 
@@ -146,51 +195,57 @@
 
 		<div data-role="content">
 
-
 			<div align="center">
-				<img id="riddle_image" src="" alt="A riddle should appear here..."
-					style="height: 175px; width: auto">
+				
+				<img id="riddle_image" src="" alt="Error: image not found" style="height: 175px; width: auto">
+				
 			</div>
 
-			<div data-role="fieldcontain" class="ui-grid-b">
+			<div class="ui-grid-a">
+			
 				<div class="ui-block-a">
-					<a data-role="button" id="answer_a" onclick="checkAnswer('a')"><span
-						id="oldBtnaText">A</span></a>
+				
+					<a data-role="button" id="answer_a" onclick="checkAnswer('a')"><span id="oldBtnaText">A</span></a>
+					<a data-role="button" id="answer_b" onclick="checkAnswer('b')"><span id="oldBtnbText">B</span></a>
+						
 				</div>
+				
 				<div class="ui-block-b">
-					<a data-role="button" id="answer_b" onclick="checkAnswer('b')"><span
-						id="oldBtnbText">B</span></a>
+				
+					<a data-role="button" id="answer_c" onclick="checkAnswer('c')"><span id="oldBtncText">C</span></a>
+					<a data-role="button" id="answer_d" onclick="checkAnswer('d')"><span id="oldBtncText">D</span></a>
+					
 				</div>
-				<div class="ui-block-c">
-					<a data-role="button" id="answer_c" onclick="checkAnswer('c')"><span
-						id="oldBtncText">C</span></a>
-				</div>
+				
 			</div>
-
-			<div id="countdowntimer" align="center"></div>
 			
 			<div id="countuptimer" align="center"></div>
 
 		</div>
-
-		<div data-role="footer" class="ui-bar" data-position="fixed"
-			data-id="myfooter">
-			<div data-role="navbar">
-				<ul>
-					<li><a onclick="returnFromRiddlePage()" data-role="button"
-						data-icon="arrow-l" data-iconpos="notext">Back</a></li>
-				</ul>
-
-			</div>
-
+		
+		<div data-role="footer" data-position="fixed" data-id="myfooter" >
+				
+				<div style="padding-left: 10px; float:left; width:40%;">
+	
+				<a onclick="returnFromRiddlePage()" data-role="button" data-icon="arrow-l" data-iconpos="left">Back</a>
+				
+				</div>	
+			
 		</div>
 
 	</div>
+	
+	
+	
+	
+<!--************************-->
+<!--**   PAGE: RESULTS    **-->
+<!--************************-->
 
-	<div data-role="page" id="statisticspage">
+	<div data-role="page" id="resultspage">
 
 		<div data-role="header">
-			<h1>Statistics</h1>
+			<h1>results</h1>
 		</div>
 
 		<div data-role="content" id="graph" align="center">

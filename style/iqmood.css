@@ -2,10 +2,6 @@
 .slider-label {
 	position: fixed;
 }
-/*Sets the icon images*/
-.ui-icon-statistics {
-	background-image: url('images/16-line-chart.png');
-}
 
 /*Sets the axis settings*/
 .axis path,.axis line {

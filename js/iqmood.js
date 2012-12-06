@@ -1,14 +1,6 @@
 //Clears the localStorage when the app is started
 localStorage.clear();
 
-//Some functions to test swiping (doesn't work yet)
-//$('#propertiespage').bind('swipeleft', function() {
-//$.mobile.changePage("#emotionspage");
-//});
-//$(document).on('mobileinit', function () {
-//$.mobile.ignoreContentEnabled = true;
-//});
-
 //Array that contains all the data
 var db;
 var dataTables = ["id", "feeling_1", "feeling_2", "feeling_3", "feeling_4", "time"];
@@ -30,25 +22,25 @@ var riddle = new Array(5);
 var svg;
 
 window.onload = init();
+
 //Function that contains everything that should be done when starting the app
 function init(){
 	initDatabase();
 }
 
 //Script for putting the sliderlabels in the right position
-$('#emotionspage').live('pageshow', function() { 
+$('#emotionspage').live('pageshow', function()
+{ 
 	var offset,
 	$slider = null,
-	dims = {
-			top: null,
-			left: null
-	};
-	$(".slider-label").each(function() {
+	dims = {top: null, left: null};
+	$(".slider-label").each(function()
+	{
 		var $this = $(this);
 		$slider = $this.prevAll("div.ui-slider[role='application']");
 		if ( $this.hasClass("left") ) {
 			offset = $slider.offset();
-			dims.top = offset.top + $slider.outerHeight();
+			dims.top = offset.top + $slider.outerHeight() + 5;
 			dims.left = offset.left - 20;
 		}
 		if ( $this.hasClass("right") ) {
@@ -59,11 +51,16 @@ $('#emotionspage').live('pageshow', function() {
 });		
 
 //Function that initialises the database
-function initDatabase() {
-	try {
-		if (!window.openDatabase) {
+function initDatabase()
+{
+	try
+	{
+		if (!window.openDatabase)
+		{
 			alert('Databases are not supported in this browser.');
-		} else {
+		}
+		else
+		{
 			var shortName = 'IQMOODDB';
 			var version = '1.0';
 			var displayName = 'IQMOOD Database';
@@ -75,11 +72,16 @@ function initDatabase() {
 			db.transaction(createPropertiesTable, errorCB, successCB);
 //			storeEmotionsDB();
 		}
-	} catch(e) {
-		if (e == 2) {
+	}
+	catch(e)
+	{
+		if (e == 2)
+		{
 			// Version number mismatch.
 			alert("Invalid database version.");
-		} else {
+		} 
+		else
+		{
 			alert("Unknown error "+e+".");
 		}
 		return;
@@ -87,19 +89,25 @@ function initDatabase() {
 }
 
 //Transaction error callback, called when a db transaction returns an error
-function errorCB(tx, err) {
+function errorCB(tx, err)
+{
 	alert("Error processing SQL: "+err);
 }
 
-//Transaction success callback, 
-function successCB() {
+//Transaction success callback, called when a db transaction is succesful
+function successCB()
+{
+	
 }
 
 //Creates the IQMOODRIDDLES table and stores the riddles in it
-function storeRiddles(transaction){
+function storeRiddles(transaction)
+{
 	transaction.executeSql('DROP TABLE IF EXISTS IQMOODRIDDLES');
 	transaction.executeSql('CREATE TABLE IF NOT EXISTS IQMOODRIDDLES(' + riddleTables[0] + ' TEXT, ' + riddleTables[1] + ' TEXT, ' + riddleTables[2] + ' TEXT, ' + riddleTables[3] + ' TEXT, ' + riddleTables[4] + ' TEXT);');
-	for(var i = 0; i<riddles.length; i++){
+	
+	for(var i = 0; i<riddles.length; i++)
+	{
 		transaction.executeSql("INSERT INTO IQMOODRIDDLES(" + riddleTables[0] + ", " + riddleTables[1] + ", " + riddleTables[2] + ", " + riddleTables[3] + ", " + riddleTables[4] + ") VALUES (?, ?, ?, ?, ?)", [riddles[i], answers_1[i], answers_2[i], answers_3[i], answers_4[i]]);
 	}
 }
@@ -125,49 +133,63 @@ function createPropertiesTable(transaction){
 }
 
 //Stores the emotions stored in the counter, feeling1-4 and time variables
-function storeEmotionsDB(){
+function storeEmotionsDB()
+{
 	counter++;
 	db.transaction(
-		function (transaction) {
+		function (transaction)
+		{
 			transaction.executeSql("INSERT INTO IQMOODDATA(" + dataTables[0] + ", " + dataTables[1] + ", " + dataTables[2] + ", " + dataTables[3] + ", " + dataTables[4] + ", " + dataTables[5] + ") VALUES (?, ?, ?, ?, ?, ?)", [counter, feeling_1, feeling_2, feeling_3, feeling_4, time]);
-		}, errorCB, successCB
-	);
+		}, errorCB, successCB);
 }
 
 //Stores the properties given as arguments
-function storePropertiesDB(age, sex){
+function storePropertiesDB(age, sex)
+{
 	db.transaction(
-		function (transaction) {
+		function (transaction) 
+		{
 			transaction.executeSql("INSERT INTO IQMOODPROPERTIES(" + propertiesTables[0] + ", " + propertiesTables[1] + ") VALUES (?, ?)", [age, sex]);
-		}, errorCB, successCB
-	);
+		}, errorCB, successCB);
 }
 
 //Gets the data from the IQMOODDATA table and stores it in the dataset array
-function createStats(){
+function createStats()
+{
 	db.transaction(queryStatsDB, errorCB);
 }
-function queryStatsDB(transaction) {
+
+
+function queryStatsDB(transaction)
+{
 	transaction.executeSql('SELECT * FROM IQMOODDATA',[], queryStatsSuccess, errorCB);
 }
-function queryStatsSuccess(transaction, results) {
+
+function queryStatsSuccess(transaction, results)
+{
 	dataset = new Array(results.rows.length);
-	for(var i = 0; i < results.rows.length; i++){
+	
+	for(var i = 0; i < results.rows.length; i++)
+	{
 		dataset[i] = new Array(5);
-		dataset[i][0] = results.rows.item(i).feeling_1;//dataTables[1];
-		dataset[i][1] = results.rows.item(i).feeling_2;//dataTables[2];
-		dataset[i][2] = results.rows.item(i).feeling_3;//dataTables[3];
-		dataset[i][3] = results.rows.item(i).feeling_4;//dataTables[4];
-		dataset[i][4] = results.rows.item(i).time;//dataTables[5];
+		dataset[i][0] = results.rows.item(i).feeling_1;	//dataTables[1];
+		dataset[i][1] = results.rows.item(i).feeling_2;	//dataTables[2];
+		dataset[i][2] = results.rows.item(i).feeling_3;	//dataTables[3];
+		dataset[i][3] = results.rows.item(i).feeling_4;	//dataTables[4];
+		dataset[i][4] = results.rows.item(i).time;		//dataTables[5];
 	}
+	
 	var emotion = 0;
-	if($('#radio-choice-0').is(':checked')){
+	if($('#radio-choice-0').is(':checked'))
+	{
 		emotion = 0;
 	}
-	else if($('#radio-choice-1').is(':checked')){
+	else if($('#radio-choice-1').is(':checked'))
+	{
 		emotion = 1;
 	}
-	else if($('#radio-choice-2').is(':checked')){
+	else if($('#radio-choice-2').is(':checked'))
+	{
 		emotion = 2;
 	}
 	else if($('#radio-choice-3').is(':checked')){
@@ -178,13 +200,19 @@ function queryStatsSuccess(transaction, results) {
 }
 
 //Gets a random riddle and its answers from the IQMOODRIDDLES table and stores it in the riddle array
-function getNewRiddle(){
+function getNewRiddle()
+{
 	db.transaction(queryRiddleDB, errorCB);
 }
-function queryRiddleDB(transaction) {
+
+
+function queryRiddleDB(transaction)
+{
 	transaction.executeSql('SELECT * FROM IQMOODRIDDLES',[], queryRiddleSuccess, errorCB);
 }
-function queryRiddleSuccess(transaction, results) {
+
+function queryRiddleSuccess(transaction, results)
+{
 	var ranNumber = Math.round(Math.random() * 3);
 	riddle[0] = results.rows.item(ranNumber).riddle;//riddleTables[0];
 	riddle[1] = results.rows.item(ranNumber).answer_1;//riddleTables[1];
@@ -197,7 +225,8 @@ function queryRiddleSuccess(transaction, results) {
 }
 
 //Function for saving the birthyear and sex
-function saveProperties() {
+function saveProperties()
+{
 	if($('#radio-choice-m').is(':checked')){
 		storePropertiesDB($('#age').val(), $('#radio-choice-m').val());
 	}
@@ -207,7 +236,8 @@ function saveProperties() {
 }	
 
 //Function for saving the emotions and loading a new riddle 
-function saveEmotionsAndLoadRiddle() {
+function saveEmotionsAndLoadRiddle()
+{
 	feeling_1 = $('#slider-1').val();
 	feeling_2 = $('#slider-2').val();
 	feeling_3 = $('#slider-3').val();
