@@ -24,9 +24,123 @@ var svg;
 window.onload = init();
 
 //Function that contains everything that should be done when starting the app
-function init(){
+function init()
+{
 	initDatabase();
 }
+
+
+//Function for saving the emotions and loading a new riddle 
+function fromEmotionsPageToRiddlesPage()
+{
+	//Store the emotions the user has entered
+	localStorage.emotion1_value = $('#slider1').val();
+	localStorage.emotion2_value = $('#slider2').val();
+	localStorage.emotion3_value = $('#slider3').val();
+	localStorage.emotion4_value = $('#slider4').val();
+	
+	//Generate a new riddle
+	var riddle = getRandomRiddle();
+	
+	document.getElementById("riddle_header").innerHTML=riddle.header;
+	document.getElementById("riddle_question").innerHTML=riddle.question;
+    
+    localStorage.riddle_answer = riddle.answer;
+    
+    $("#riddle_answer_button_A_text").text(riddle.allAnswers[0]);
+    $("#riddle_answer_button_B_text").text(riddle.allAnswers[1]);
+    $("#riddle_answer_button_C_text").text(riddle.allAnswers[2]);
+    $("#riddle_answer_button_D_text").text(riddle.allAnswers[3]);
+
+    //Reset and start the timer
+    localStorage.time_to_solve = 0;
+    document.getElementById("timerText").innerHTML= formatTimeString(0);
+    localStorage.timer_ID = self.setInterval(function(){count()},1000);
+}
+
+function count()
+{
+	var seconds = Number(localStorage.time_to_solve) + 1;
+	document.getElementById("timerText").innerHTML = formatTimeString(seconds);
+	localStorage.time_to_solve = seconds;
+}
+
+function formatTimeString(seconds)
+{
+	var secondsString = (seconds % 60);
+	var minutesString = Math.floor(seconds / 60);
+	
+	if (secondsString < 10)
+	{
+		secondsString = "0" + secondsString;
+	}
+	
+	if (minutesString < 10)
+	{
+		minutesString = "0" + minutesString;
+	}
+	
+	return (minutesString + ":" + secondsString);
+}
+
+//Function that checks whether the answer was good or bad (is called when a user presses one of the answers)
+function checkAnswer(buttonId)
+{			
+	if ($(eval("'#" + buttonId + "_text'")).text() == localStorage.riddle_answer)
+	{
+		window.clearInterval(localStorage.timer_ID);
+		$(eval("'#" + buttonId + "_icon'")).attr("src","images/correct.png");
+		document.getElementById("riddle_answer_button_A").disabled = "true";
+		document.getElementById("riddle_answer_button_B").disabled = "true";
+		document.getElementById("riddle_answer_button_C").disabled = "true";
+		document.getElementById("riddle_answer_button_D").disabled = "true";
+		
+		document.getElementById("saveResultButton").style.visibility = 'visible';
+	}
+	else
+	{	
+		$(eval("'#" + buttonId + "_icon'")).attr("src","images/wrong.png");
+		document.getElementById(buttonId).disabled = "true";
+		var seconds = Number(localStorage.time_to_solve) + 5;	
+		localStorage.time_to_solve = seconds;
+		var timerText = document.getElementById("timerText");
+		//$("#timerIcon").effect("bounce", {}, 500,emptyFunc(){});
+		setTimeout(function() {timerText.style.color = "red";}, 200);
+		setTimeout(function() {timerText.style.color = "black";}, 1000);
+	}
+}
+
+function fromRiddlesPageBackToEmotionsPage()
+{
+	//Enable all the answering buttons
+    $("#riddle_answer_button_A").removeAttr("disabled");
+    $("#riddle_answer_button_A_icon").attr("src","images/unknown.png");
+    $("#riddle_answer_button_B").removeAttr("disabled");
+    $("#riddle_answer_button_B_icon").attr("src","images/unknown.png");
+    $("#riddle_answer_button_C").removeAttr("disabled");
+    $("#riddle_answer_button_C_icon").attr("src","images/unknown.png");
+    $("#riddle_answer_button_D").removeAttr("disabled");
+    $("#riddle_answer_button_D_icon").attr("src","images/unknown.png");
+    
+    //Make the result button hidden again in case it is visible
+    document.getElementById("saveResultButton").style.visibility = 'hidden';
+    
+    //Stop the timer function
+    window.clearInterval(localStorage.timer_ID);
+}
+
+function fromRiddlesPageToResultsPage()
+{
+	//Enable all the answering buttons
+    $("#riddle_answer_button_A").removeAttr("disabled");
+    $("#riddle_answer_button_B").removeAttr("disabled");
+    $("#riddle_answer_button_C").removeAttr("disabled");
+    $("#riddle_answer_button_D").removeAttr("disabled");
+    
+    //Make the result button hidden again
+	document.getElementById("saveResultButton").style.visibility = 'hidden';
+}
+
 
 //Script for putting the sliderlabels in the right position
 $('#emotionspage').live('pageshow', function()
@@ -48,7 +162,35 @@ $('#emotionspage').live('pageshow', function()
 		}
 		$this.css( dims );
 	});
-});		
+});	
+
+
+function fromProfilePageToEmotionsPage()
+{
+	//save all info in the database
+
+
+
+
+}
+
+function toggleReminder(state)
+{
+	alert(document.getElementById("interval_list").selectedIndex);
+	
+	if(state)
+	{
+		document.getElementById("interval_list").selected = 1; 
+		alert("c");
+		document.getElementById("interval_list").selectedIndex = 2; 
+		alert("d");
+		document.getElementById("interval_list").selectedIndex = 3; 
+	}
+	else
+	{
+		document.getElementById("interval_list").selectedIndex = 4; 
+	}
+}
 
 //Function that initialises the database
 function initDatabase()
@@ -235,77 +377,13 @@ function saveProperties()
 	}
 }	
 
-//Function for saving the emotions and loading a new riddle 
-function saveEmotionsAndLoadRiddle()
-{
-	feeling_1 = $('#slider-1').val();
-	feeling_2 = $('#slider-2').val();
-	feeling_3 = $('#slider-3').val();
-	feeling_4 = $('#slider-4').val();
-	getNewRiddle();
-}
 
-//Function that loads the answers for the riddle and puts that in a random order, NOG NIET VOLLEDIG RANDOM
-function setAnswers(n){
-	var k = Math.round(Math.random() * 2);
-	var second = (k+2)%3;
-	var third = (k+1)%3;
-	$('#oldBtnaText').text(riddle[k+1]);
-	$('#oldBtnbText').text(riddle[second+1]);
-	$('#oldBtncText').text(riddle[third+1]);
-	localStorage.setItem("choice_a", k);
-	localStorage.setItem("choice_b", second);
-	localStorage.setItem("choice_c", third);
-}
 
-//Info about timer: http://keith-wood.name/countdown.html
-//Function to start te countdown timer
-function startTimer() {
-//	$('#countdowntimer').countdown({until: +30, format: 'S', onExpiry: timesUp});
-	$('#countuptimer').countdown({since: 0, format: 'S'});	
-}
 
-////Function that handle's the time's up
-//function timesUp() { 
-//	var r = confirm("Time's up!");
-//	if (r==true) {
-//		$.mobile.changePage("#emotionspage");
-//		$('#countdowntimer').countdown('destroy');;
-//		$('#countuptimer').countdown('destroy');		
-//	}
-//	else {}
-//} 
-
-//Function that checks whether the answer was good or bad (is called when a user presses one of the answers)
-function checkAnswer(n){
-	var check = localStorage.getItem("choice_" + n);
-	if(check == 0) {
-		answerGood();
-	} 
-	else{
-		$('#oldBtn' + n + 'Text').text("FALSE");
-//		detract(5);
-		addSeconds(5);
-	}
-}
-
-////Function to detract time from countdown timer
-//function detract(n){
-//	var periods = $('#countuptimer').countdown('getTimes'); 
-//	var newuntil = periods[6] - n;
-//	$('#countuptimer').countdown('option', {until: newuntil});
-//}	
-
-function addSeconds(n){
-	var periods = $('#countuptimer').countdown('getTimes');
-	var newSince = periods[6] + n;
-	$('#countuptimer').countdown('option', {since: newSince});
-}		
 
 //Function that alerts the user when he solved the riddle, resets the sliders and stores the emotions and time
 function answerGood(){
-	var periods = $('#countuptimer').countdown('getTimes');
-//	var periods = $('#countdowntimer').countdown('getTimes');
+	var periods = $('#timer').countdown('getTimes');
 	var r=confirm("You were correct!" + "\n" + "Your time: " + periods[6]);
 	if (r==true) {
 		$.mobile.changePage("#emotionspage");
@@ -332,10 +410,7 @@ function resetSliders(){
 	$('#slider-4').slider('refresh');
 }
 
-function returnFromRiddlePage(){
-	$.mobile.changePage("#emotionspage");
-	$('#countdowntimer').countdown('destroy');
-}
+
 
 function chooseStats(){
 	removeGraph();

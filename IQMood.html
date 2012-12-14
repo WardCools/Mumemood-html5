@@ -21,13 +21,12 @@
 <script src="js/rgbcolor.js"></script>
 <script src="js/d3.v2.js"></script>
 <script src="js/jquery.countdown.js"></script>
-<script src='js/iqmood.js'></script>
 <script src='js/riddles.js'></script>
-
-
-
+<script src='js/iqmood.js'></script>
 
 </head>
+
+
 
 <body>
 
@@ -39,16 +38,18 @@
 
 		<div data-role="header">
 		
-			<h2>HOW ARE YOU?</h2>
+			<h2>IQ-Mood</h2>
 			
 		</div>
 
 		<div data-role="content">
 		
+			<p align="center">How are you?</p>
+			
 			<div class="ui-hide-label" align="center">
 			
-				<label for="slider-1"></label>
-				<input type="range" name="slider-fill" id="slider-1" style="display: none"  value="50" min="0" max="100" data-track-theme="a" />
+				<label for="slider1"></label>
+				<input type="range" name="slider-fill" id="slider1" style="display: none"  value="50" min="0" max="100" data-track-theme="a" />
 				<span class="slider-label left" style="color:yellow">HAPPY</span>
 				<span class="slider-label right">SAD</span>
 			
@@ -56,12 +57,11 @@
 			
 			<br>
 			<br>
-			<br>
 			
 			<div class="ui-hide-label" align="center">
 			
-				<label for="slider-2"></label>
-				<input type="range" name="slider-fill" id="slider-2" style="display: none"  value="50" min="0" max="100" data-track-theme="a" />
+				<label for="slider2"></label>
+				<input type="range" name="slider-fill" id="slider2" style="display: none"  value="50" min="0" max="100" data-track-theme="a" />
 				<span class="slider-label left" style="color:green">RELAXED</span>
 				<span class="slider-label right">STRESSED</span>
 				
@@ -69,12 +69,11 @@
 			
 			<br>
 			<br>
-			<br>
 			
 			<div class="ui-hide-label" align="center">
 			
-				<label for="slider-3"></label>
-				<input type="range" name="slider-fill" style="display: none" id="slider-3" value="50" min="0" max="100" data-track-theme="a" />
+				<label for="slider3"></label>
+				<input type="range" name="slider-fill" style="display: none" id="slider3" value="50" min="0" max="100" data-track-theme="a" />
 				<span class="slider-label left" style="color:red">ENERGETIC</span>
 				<span class="slider-label right">SLOW</span>
 			
@@ -82,19 +81,16 @@
 			
 			<br>
 			<br>
-			<br>
 			
 			<div class="ui-hide-label" align="center">
 				
-				<label for="slider-4"></label>
-				<input type="range" name="slider-fill" style="display: none" id="slider-4" value="50" min="0" max="100" /> 
-				<br>
+				<label for="slider4"></label>
+				<input type="range" name="slider-fill" style="display: none" id="slider4" value="50" min="0" max="100" /> 
 				<span class="slider-label left" style="color:blue">CONFIDENT</span>
 				<span class="slider-label right">INSECURE</span>
 				
 			</div>
 			
-			<br>
 			<br>
 			<br>
 
@@ -104,16 +100,90 @@
 				
 				<div style="display:inline-block; padding-left: 10px;" data-role="controlgroup" data-type="horizontal">
 						
-					<a href="#propertiespage" data-role="button" data-icon="info">Profile</a>
+					<a href="#profilepage" data-role="button" data-icon="info">Profile</a>
 					<a href="#resultspage" data-role="button" data-icon="star" onclick="createStats()">Results</a>
 					
 				</div>
 				
 				<div style="display:inline-block; padding-right: 10px; float:right; width:40%;">
 	
-				<a href="#riddlepage" data-role="button" width="200px" data-icon="arrow-r" data-iconpos="right" onclick="saveEmotionsAndLoadRiddle()">Go!</a>
+					<a href="#riddlespage" data-role="button" data-icon="arrow-r" data-iconpos="right" onclick="fromEmotionsPageToRiddlesPage()">Go!</a>
 			
 				</div>	
+			
+		</div>
+
+	</div>
+
+
+
+
+<!--************************-->
+<!--**   PAGE: RIDDLES    **-->
+<!--************************-->
+
+<script>
+
+
+</script>
+
+	<div data-role="page" id="riddlespage">
+
+		<div data-role="header">
+		
+			<h2>IQ-Mood</h2>
+			
+		</div>
+
+		<div data-role="content">
+
+			<div align="center">
+				
+				<p id="riddle_header" style="font-size: 1em;">header</p>
+				<p id="riddle_question" style="font-size: 2em;">question</p>
+				
+			</div>
+
+			<div class="ui-grid-a">
+			
+				<div class="ui-block-a">
+					
+					<button type="button" id="riddle_answer_button_A" onclick="checkAnswer(this.id)"><img id="riddle_answer_button_A_icon" src="images/unknown.png" height="23.5" style="float:left"><span id="riddle_answer_button_A_text" style="font-size: 1.5em;">default A</span></button>
+					<button type="button" id="riddle_answer_button_B" onclick="checkAnswer(this.id)"><img id="riddle_answer_button_B_icon" src="images/unknown.png"  height="23.5" style="float:left"><span id="riddle_answer_button_B_text" style="font-size: 1.5em;">default B</span></button>
+						
+				</div>
+				
+				<div class="ui-block-b">
+				
+					<button type="button" id="riddle_answer_button_C" onclick="checkAnswer(this.id)"><img id="riddle_answer_button_C_icon" src="images/unknown.png" height="23.5" style="float:left"><span id="riddle_answer_button_C_text" style="font-size: 1.5em;">default C</span></button>
+					<button type="button" id="riddle_answer_button_D" onclick="checkAnswer(this.id)"><img id="riddle_answer_button_D_icon" src="images/unknown.png" height="23.5" style="float:left"><span id="riddle_answer_button_D_text" style="font-size: 1.5em;">default D</span></button>
+					
+				</div>
+				
+			</div>
+			
+			<div style="padding: 0em 4em">
+			
+				<img id="timerIcon" src="images/timer.png" alt="Not found :(" width="50" height="65" style="float:left">
+				<p id="timerText" style="padding: 0.55em 0em 0em 2.4em; font-size: 2em;"></p>
+				
+			</div>
+
+		</div>
+		
+		<div data-role="footer" data-position="fixed" data-id="myfooter" >
+				
+			<div style="padding-left: 10px; float:left; width:40%;">
+	
+				<a href="#emotionspage" onclick="fromRiddlesPageBackToEmotionsPage()" data-role="button" data-icon="arrow-l" data-iconpos="left">Back</a>
+				
+			</div>	
+				
+			<div style="padding-right: 10px; float:right; width:50%;">
+				
+				<a id="saveResultButton" style="visibility: hidden;" href="#resultspage" onclick="fromRiddlesPageToResultsPage()" data-role="button" data-icon="arrow-r" data-iconpos="right">Save Result</a>
+				
+			</div>
 			
 		</div>
 
@@ -127,114 +197,100 @@
 	
 	
 
-	<div data-role="page" id="propertiespage">
+	<div data-role="page" id="profilepage">
 
 		<div data-role="header">
-			<h2>PROPERTIES</h2>
+		
+			<h2>IQ-Mood</h2>
+			
 		</div>
 
 		<div data-role="content">
-
-			<div align="center">
-				<img id="properties_image"
-					src="http://wdfyfe.files.wordpress.com/2012/07/puzzle11.jpg"
-					alt="puzzle" style="height: 100px; width: auto">
-			</div>
-
-			<div data-role="fieldcontain" align="center">
-				<fieldset data-role="controlgroup" data-type="horizontal">
-
-					<label for="age">AGE</label> <input type="text" name="age" id="age"
-						value="" />
-
-				</fieldset>
-			</div>
-
-			<div data-role="fieldcontain" align="center">
-				<fieldset data-role="controlgroup" data-type="horizontal">
-
-					<label for="test">SEX</label>
-
-					<div id="test" align="center">
-						<input type="radio" name="sex" id="radio-choice-m" value="male" />
-						<label for="radio-choice-m">M</label> <input type="radio"
-							name="sex" id="radio-choice-f" value="female" /> <label
-							for="radio-choice-f">F</label>
-					</div>
-
-				</fieldset>
-			</div>
-		</div>
-
-		<div data-role="footer" class="ui-bar" data-position="fixed">
-			<div data-role="navbar">
-				<ul>
-					<li><a href="#emotionspage" onclick="saveProperties()"
-						data-role="button" id="prop_go" data-icon="arrow-r"
-						data-transition="fade" data-id="myfooter">GO!</a></li>
-				</ul>
-			</div>
-		</div>
-
-	</div>
-	
-	
-	
-	
-<!--************************-->
-<!--**   PAGE: RIDDLES    **-->
-<!--************************-->
-
-
-
-	<div data-role="page" id="riddlepage">
-
-		<div data-role="header">
-			<h2>SOLVE IT!</h2>
-		</div>
-
-		<div data-role="content">
-
-			<div align="center">
-				
-				<img id="riddle_image" src="" alt="Error: image not found" style="height: 175px; width: auto">
-				
-			</div>
-
+		
 			<div class="ui-grid-a">
 			
 				<div class="ui-block-a">
-				
-					<a data-role="button" id="answer_a" onclick="checkAnswer('a')"><span id="oldBtnaText">A</span></a>
-					<a data-role="button" id="answer_b" onclick="checkAnswer('b')"><span id="oldBtnbText">B</span></a>
-						
+					
+					<p style="padding-right: 1em;" align="right">AGE</p>
+					<p style="padding-right: 1em; padding-top: 1em;" align="right">GENDER</p>
+							
 				</div>
 				
 				<div class="ui-block-b">
 				
-					<a data-role="button" id="answer_c" onclick="checkAnswer('c')"><span id="oldBtncText">C</span></a>
-					<a data-role="button" id="answer_d" onclick="checkAnswer('d')"><span id="oldBtncText">D</span></a>
+					<input id="age_input" type="text" style="padding-right: 6em;" maxlength="2"/>
+					<div data-role="controlgroup" data-type="horizontal">
+
+						<div id="gender_radio_buttons" align="center">
+						
+							<input type="radio" name="sex" id="gender_input_M" value="male"/>
+							<label for="gender_input_M"><img src="images/male.png" alt="F" width="26" height="21"></label>
+							<input type="radio" name="sex" id="gender_input_F" value="female"/>
+							<label for="gender_input_F"><img src="images/female.png" alt="F" width="26" height="21"></label>
+							
+						</div>
+
+					</div>
 					
 				</div>
 				
 			</div>
 			
-			<div id="countuptimer" align="center"></div>
+			<br>
+			<br>
+			<p>Here you can configure the options for reminding you to solve a new riddle.</p>
+			
+			<div class="ui-grid-a">
+			
+				<div class="ui-block-a">
+					
+					<p style="padding-right: 1em; padding-top: 0.4em;" align="right">AUTO REMIND</p>
+					<p style="padding-right: 1em; padding-top: 1em;" align="right">INTERVAL</p>
+							
+				</div>
+				
+				<div class="ui-block-b">
+				
+					<div id="auto_remind_radio_buttons" data-role="controlgroup" data-type="horizontal">
 
+						<input type="radio" onclick="toggleReminder(true)" name="auto_remind_button" id="auto_remind_on" value="male"/>
+						<label for="auto_remind_on"><img src="images/correct.png" alt="NO" width="26" height="21"></label>
+						<input type="radio" onclick="toggleReminder(false)" name="auto_remind_button" id="auto_remind_off" value="female"/>
+						<label for="auto_remind_off"><img src="images/wrong.png" alt="NO" width="26" height="21"></label>
+
+					</div>
+					
+					<select id="interval_list" name="Single-line ListBox example">
+					
+						<option id="1" value="1">daily</option>
+						<option id="2" value="2">weekly</option>
+						<option id="3" value="4">monthly</option>
+						<option id="4" value="5">never</option>
+					
+					</select>
+					
+				</div>
+				
+			</div>
+			
 		</div>
-		
+
 		<div data-role="footer" data-position="fixed" data-id="myfooter" >
 				
-				<div style="padding-left: 10px; float:left; width:40%;">
+			<div style="padding-right: 10px; float:right; width:40%;">
 	
-				<a onclick="returnFromRiddlePage()" data-role="button" data-icon="arrow-l" data-iconpos="left">Back</a>
+				<a href="#emotionspage" onclick="fromProfilePageToEmotionsPage()" data-role="button" data-icon="arrow-r" data-iconpos="right">OK</a>
 				
-				</div>	
+			</div>	
 			
 		</div>
 
 	</div>
 	
+	
+	
+	
+
 	
 	
 	
