@@ -9,8 +9,6 @@
 <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
 
 <!--offline-->
-<!-- <link rel="stylesheet" href="style/jquery.mobile-1.2.0.min.css"></link> -->
-<link rel="stylesheet" href="style/jquery.countdown.css"></link>
 <link rel="stylesheet" href='style/iqmood.css'></link>
  <link rel="stylesheet" href="style/iqmood_themeroller.css" />
 
@@ -20,7 +18,6 @@
 <script src="js/canvg.js"></script>
 <script src="js/rgbcolor.js"></script>
 <script src="js/d3.v2.js"></script>
-<script src="js/jquery.countdown.js"></script>
 <script src='js/riddles.js'></script>
 <script src='js/iqmood.js'></script>
 
@@ -111,6 +108,28 @@
 			
 				</div>	
 			
+		</div>
+
+		<div>
+
+			<button id="b0">b0</button>
+			<button id="b1"
+				onclick="document.getElementById('b0').innerHTML = 'foo';">click
+				me</button>
+
+			<select id="sel0">
+				<option>Sunday
+				<option>Monday
+				<option>Tuesday
+				<option>Wednesday
+			</select>
+
+			<button onclick="document.getElementById('sel0').selectedIndex = 1;">Select
+				Monday</button>
+
+			<button onclick="document.getElementById('sel0').selectedIndex = 3;">Select
+				Wednesday</button>
+
 		</div>
 
 	</div>
@@ -207,6 +226,7 @@
 
 		<div data-role="content">
 		
+		
 			<div class="ui-grid-a">
 			
 				<div class="ui-block-a">
@@ -219,16 +239,13 @@
 				<div class="ui-block-b">
 				
 					<input id="age_input" type="text" style="padding-right: 6em;" maxlength="2"/>
-					<div data-role="controlgroup" data-type="horizontal">
+					
+					<div data-role="controlgroup" data-type="horizontal" id="gender_radio_buttons" align="center">
 
-						<div id="gender_radio_buttons" align="center">
-						
-							<input type="radio" name="sex" id="gender_input_M" value="male"/>
-							<label for="gender_input_M"><img src="images/male.png" alt="F" width="26" height="21"></label>
-							<input type="radio" name="sex" id="gender_input_F" value="female"/>
-							<label for="gender_input_F"><img src="images/female.png" alt="F" width="26" height="21"></label>
-							
-						</div>
+						<input type="radio" name="gender" id="gender_input_M"/>
+						<label for="gender_input_M"><img src="images/male.png" alt="F" width="26" height="21"></label>
+						<input type="radio" name="gender" id="gender_input_F"/>
+						<label for="gender_input_F"><img src="images/female.png" alt="F" width="26" height="21"></label>
 
 					</div>
 					
@@ -238,7 +255,7 @@
 			
 			<br>
 			<br>
-			<p>Here you can configure the options for reminding you to solve a new riddle.</p>
+			<p>Here you can configure your options for reminding you when to solve a new riddle.</p>
 			
 			<div class="ui-grid-a">
 			
@@ -253,9 +270,9 @@
 				
 					<div id="auto_remind_radio_buttons" data-role="controlgroup" data-type="horizontal">
 
-						<input type="radio" onclick="toggleReminder(true)" name="auto_remind_button" id="auto_remind_on" value="male"/>
+						<input type="radio" onclick="document.getElementById('interval_list').selectedIndex = 0;" name="auto_remind_button" id="auto_remind_on"/>
 						<label for="auto_remind_on"><img src="images/correct.png" alt="NO" width="26" height="21"></label>
-						<input type="radio" onclick="toggleReminder(false)" name="auto_remind_button" id="auto_remind_off" value="female"/>
+						<input type="radio" onclick="document.getElementById('interval_list').selectedIndex = 3;" name="auto_remind_button" id="auto_remind_off"/>
 						<label for="auto_remind_off"><img src="images/wrong.png" alt="NO" width="26" height="21"></label>
 
 					</div>
