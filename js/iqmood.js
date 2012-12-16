@@ -4,22 +4,9 @@ localStorage.clear();
 //Array that contains all the data
 var db;
 var dataTables = ["id", "feeling_1", "feeling_2", "feeling_3", "feeling_4", "time"];
-var riddleTables = ["riddle", "answer_1", "answer_2", "answer_3", "answer_4"];
 var propertiesTables = ["age", "sex"];
-var riddles = ["images/usa3.jpg", "images/india.jpg", "images/france.jpg", "images/uk.jpg"];
-var answers_1 = ["USA", "India", "France", "UK"];
-var answers_2 = ["Russia", "Belarus", "Netherlands", "China"];
-var answers_3 = ["Alaska", "China", "Germany", "Spain"];
-var answers_4 = ["Belgium", "Pakistan", "UK", "Mexico"];
 var counter = 0;
-var feeling_1 = 50;
-var feeling_2 = 50;
-var feeling_3 = 50;
-var feeling_4 = 50;
-var time = 0;
 var dataset;
-var riddle = new Array(5);
-var svg;
 
 window.onload = init();
 
@@ -38,20 +25,20 @@ function fromEmotionsPageToRiddlesPage()
 	localStorage.emotion2_value = $('#slider2').val();
 	localStorage.emotion3_value = $('#slider3').val();
 	localStorage.emotion4_value = $('#slider4').val();
-	
+
 	//Generate a new riddle
 	var riddle = getRandomRiddle();
-	
+
 	document.getElementById("riddle_header").innerHTML=riddle.header;
 	document.getElementById("riddle_question").innerHTML=riddle.question;
-    
+
     localStorage.riddle_answer = riddle.answer;
     
     $("#riddle_answer_button_A_text").text(riddle.allAnswers[0]);
     $("#riddle_answer_button_B_text").text(riddle.allAnswers[1]);
     $("#riddle_answer_button_C_text").text(riddle.allAnswers[2]);
     $("#riddle_answer_button_D_text").text(riddle.allAnswers[3]);
-
+ 
     //Reset and start the timer
     localStorage.time_to_solve = 0;
     document.getElementById("timerText").innerHTML= formatTimeString(0);
@@ -133,9 +120,13 @@ function fromRiddlesPageToResultsPage()
 {
 	//Enable all the answering buttons
     $("#riddle_answer_button_A").removeAttr("disabled");
+    $("#riddle_answer_button_A_icon").attr("src","images/unknown.png");
     $("#riddle_answer_button_B").removeAttr("disabled");
+    $("#riddle_answer_button_B_icon").attr("src","images/unknown.png");
     $("#riddle_answer_button_C").removeAttr("disabled");
+    $("#riddle_answer_button_C_icon").attr("src","images/unknown.png");
     $("#riddle_answer_button_D").removeAttr("disabled");
+    $("#riddle_answer_button_D_icon").attr("src","images/unknown.png");
     
     //Make the result button hidden again
 	document.getElementById("saveResultButton").style.visibility = 'hidden';
@@ -168,28 +159,6 @@ $('#emotionspage').live('pageshow', function()
 function fromProfilePageToEmotionsPage()
 {
 	//save all info in the database
-
-
-
-
-}
-
-function toggleReminder(state)
-{
-	alert(document.getElementById("interval_list").selectedIndex);
-	
-	if(state)
-	{
-		document.getElementById("interval_list").selected = 1; 
-		alert("c");
-		document.getElementById("interval_list").selectedIndex = 2; 
-		alert("d");
-		document.getElementById("interval_list").selectedIndex = 3; 
-	}
-	else
-	{
-		document.getElementById("interval_list").selectedIndex = 4; 
-	}
 }
 
 //Function that initialises the database
@@ -208,11 +177,9 @@ function initDatabase()
 			var displayName = 'IQMOOD Database';
 			var maxSize = 100000; //  bytes
 			db = window.openDatabase(shortName, version, displayName, maxSize);
-			db.transaction(storeRiddles, errorCB, successCB);
 			clearData();
 			db.transaction(createDataTable, errorCB, successCB);
 			db.transaction(createPropertiesTable, errorCB, successCB);
-//			storeEmotionsDB();
 		}
 	}
 	catch(e)
@@ -240,18 +207,6 @@ function errorCB(tx, err)
 function successCB()
 {
 	
-}
-
-//Creates the IQMOODRIDDLES table and stores the riddles in it
-function storeRiddles(transaction)
-{
-	transaction.executeSql('DROP TABLE IF EXISTS IQMOODRIDDLES');
-	transaction.executeSql('CREATE TABLE IF NOT EXISTS IQMOODRIDDLES(' + riddleTables[0] + ' TEXT, ' + riddleTables[1] + ' TEXT, ' + riddleTables[2] + ' TEXT, ' + riddleTables[3] + ' TEXT, ' + riddleTables[4] + ' TEXT);');
-	
-	for(var i = 0; i<riddles.length; i++)
-	{
-		transaction.executeSql("INSERT INTO IQMOODRIDDLES(" + riddleTables[0] + ", " + riddleTables[1] + ", " + riddleTables[2] + ", " + riddleTables[3] + ", " + riddleTables[4] + ") VALUES (?, ?, ?, ?, ?)", [riddles[i], answers_1[i], answers_2[i], answers_3[i], answers_4[i]]);
-	}
 }
 
 //Deletes the IQMOODDATA table
@@ -337,66 +292,18 @@ function queryStatsSuccess(transaction, results)
 	else if($('#radio-choice-3').is(':checked')){
 		emotion = 3;
 	}
-	createSvg(emotion);
-//	$('#graphpopup').popup('close');
-}
-
-//Gets a random riddle and its answers from the IQMOODRIDDLES table and stores it in the riddle array
-function getNewRiddle()
-{
-	db.transaction(queryRiddleDB, errorCB);
-}
-
-
-function queryRiddleDB(transaction)
-{
-	transaction.executeSql('SELECT * FROM IQMOODRIDDLES',[], queryRiddleSuccess, errorCB);
-}
-
-function queryRiddleSuccess(transaction, results)
-{
-	var ranNumber = Math.round(Math.random() * 3);
-	riddle[0] = results.rows.item(ranNumber).riddle;//riddleTables[0];
-	riddle[1] = results.rows.item(ranNumber).answer_1;//riddleTables[1];
-	riddle[2] = results.rows.item(ranNumber).answer_2;//riddleTables[2];
-	riddle[3] = results.rows.item(ranNumber).answer_3;//riddleTables[3];
-	riddle[4] = results.rows.item(ranNumber).answer_4;//riddleTables[4];
-	$("#riddle_image").attr("src",riddle[0]);//sets a new riddle image
-	setAnswers();//sets the possible answers
-	startTimer();//starts the timer
 }
 
 //Function for saving the birthyear and sex
 function saveProperties()
 {
-	if($('#radio-choice-m').is(':checked')){
-		storePropertiesDB($('#age').val(), $('#radio-choice-m').val());
-	}
-	else if ($('#radio-choice-f').is(':checked')){
-		storePropertiesDB($('#age').val(), $('#radio-choice-f').val());
-	}
+//	if($('#radio-choice-m').is(':checked')){
+//		storePropertiesDB($('#age').val(), $('#radio-choice-m').val());
+//	}
+//	else if ($('#radio-choice-f').is(':checked')){
+//		storePropertiesDB($('#age').val(), $('#radio-choice-f').val());
+//	}
 }	
-
-
-
-
-
-//Function that alerts the user when he solved the riddle, resets the sliders and stores the emotions and time
-function answerGood(){
-	var periods = $('#timer').countdown('getTimes');
-	var r=confirm("You were correct!" + "\n" + "Your time: " + periods[6]);
-	if (r==true) {
-		$.mobile.changePage("#emotionspage");
-		resetSliders();
-		time = periods[6];
-		storeEmotionsDB();
-//		$('#countdowntimer').countdown('destroy');
-		$('#countuptimer').countdown('destroy');
-		
-	}
-	else {
-	}
-}
 
 //Function that resets the sliders
 function resetSliders(){
@@ -408,80 +315,4 @@ function resetSliders(){
 	$('#slider-3').slider('refresh');
 	$('#slider-4').val(50);
 	$('#slider-4').slider('refresh');
-}
-
-
-
-function chooseStats(){
-	removeGraph();
-	createStats();
-	$('#graphpopup').popup('close');
-}
-
-//Function that creates the graph using d3 and svg (android 2.3 doesn't support svg!, so try to use canvas or so)
-function createSvg(emotion){
-	var feeling;
-	if(emotion == 0) feeling = "Happy-Sad";
-	else if(emotion == 1) feeling = "Relaxed-Stressed";
-	else if(emotion == 2) feeling = "Energetic-Slow";
-	else if(emotion == 3) feeling = "Confident-Insecure";
-	var w = 300;
-	var h = 300;
-	var padding = 50; //Space between axes and dots
-	var riddleScale = d3.scale.linear()
-	.domain([0, 35])//((d3.max(dataset2, function(d) { return d[4]; })) + 20) ])
-	.range([padding, w-padding*2]);
-	var emotionScale = d3.scale.linear()
-	.domain([0, 100])//((d3.max(dataset2, function(d) { return d[0]; })) + 20) ])
-	.range([h-padding, padding]);
-	var xAxis = d3.svg.axis()
-		.scale(riddleScale)
-		.orient("bottom")
-		.ticks(10);
-	var yAxis = d3.svg.axis()
-		.scale(emotionScale)
-		.orient("left")
-		.ticks(10);
-	svg = d3.select("#graph")
-		.append("svg")
-		.attr("width", w)
-		.attr("height", h)
-		.attr("align", "center");
-	svg.selectAll("circle")
-		.data(dataset)
-		.enter()
-		.append("circle")
-		.attr("cx", function(d) {
-			return riddleScale(d[4]);
-		})
-		.attr("cy", function(d) {
-			return emotionScale(d[emotion]);
-		})
-		.attr("r", 5)
-		.attr("fill", "black");
-	svg.append("g")
-		.attr("class", "axis")
-		.attr("transform", "translate(0," + (w - padding) + ")")
-		.call(xAxis);
-	svg.append("g")
-		.attr("class", "axis")
-		.attr("transform", "translate(" + padding + ",0)")
-		.call(yAxis);
-	svg.append("svg:text")
-	    .attr("x", w - 40)
-	    .attr("y", h - 15)
-	    .attr("text-anchor", "end")
-	    .text("time");
-	svg.append("svg:text")
-	    .attr("y", 10)
-	    .attr("x", 0)
-	    .attr("text-anchor", "end")
-	    .attr("dy", ".75em")
-	    .attr("transform", "rotate(-90)")
-	    .text(feeling);
-}
-
-//Function to remove the svg
-function removeGraph(){
-	svg.remove();
 }
