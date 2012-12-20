@@ -9,22 +9,22 @@
 <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
 
 <!--offline-->
-<link rel="stylesheet" href='style/iqmood.css'></link>
 <link rel="stylesheet" href="style/iqmood_themeroller.css" />
+<link rel="stylesheet" href='style/iqmood.css'></link>
 
 <!-- scripts used in this HTML-->
 <script src="js/jquery-1.8.2.min.js"></script>
+<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 <script src="js/jquery.mobile-1.2.0.min.js"></script>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
-<script src='js/riddles.js'></script>
-<script src="js/result_page.js"></script>
-<script src='js/iqmood.js'></script>
-
-
-<script>
-
-</script>
+<script src='js/manager_geolocation.js'></script>
+<script src='js/manager_riddle.js'></script>
+<script src='js/manager_database.js'></script>
+<script src="js/page_riddle.js"></script>
+<script src="js/page_profile.js"></script>
+<script src="js/page_emotion.js"></script>
+<script src="js/page_result.js"></script>
 
 </head>
 
@@ -32,11 +32,11 @@
 
 <body>
 
-<!--************************-->
-<!--**   PAGE: EMOTIONS   **-->
-<!--************************-->
+<!--***********************-->
+<!--**   PAGE: EMOTION   **-->
+<!--***********************-->
 
-	<div data-role="page" id="emotionspage">
+	<div data-role="page" id="page_emotion">
 
 		<div data-role="header">
 		
@@ -52,8 +52,8 @@
 			
 				<label for="slider1"></label>
 				<input type="range" name="slider-fill" id="slider1" style="display: none"  value="50" min="0" max="100" data-track-theme="a" />
-				<span class="slider-label left" style="color:yellow">HAPPY</span>
-				<span class="slider-label right">SAD</span>
+				<span class="slider-label left" style="color:gold">SAD</span>
+				<span class="slider-label right">HAPPY</span>
 			
 			</div>
 			
@@ -64,8 +64,8 @@
 			
 				<label for="slider2"></label>
 				<input type="range" name="slider-fill" id="slider2" style="display: none"  value="50" min="0" max="100" data-track-theme="a" />
-				<span class="slider-label left" style="color:green">RELAXED</span>
-				<span class="slider-label right">STRESSED</span>
+				<span class="slider-label left" style="color:green">STRESSED</span>
+				<span class="slider-label right">RELAXED</span>
 				
 			</div>
 			
@@ -76,8 +76,8 @@
 			
 				<label for="slider3"></label>
 				<input type="range" name="slider-fill" style="display: none" id="slider3" value="50" min="0" max="100" data-track-theme="a" />
-				<span class="slider-label left" style="color:red">ENERGETIC</span>
-				<span class="slider-label right">SLOW</span>
+				<span class="slider-label left" style="color:red">SLOW</span>
+				<span class="slider-label right">ENERGETIC</span>
 			
 			</div>
 			
@@ -88,13 +88,14 @@
 				
 				<label for="slider4"></label>
 				<input type="range" name="slider-fill" style="display: none" id="slider4" value="50" min="0" max="100" /> 
-				<span class="slider-label left" style="color:blue">CONFIDENT</span>
-				<span class="slider-label right">INSECURE</span>
+				<span class="slider-label left" style="color:dodgerblue">INSECURE</span>
+				<span class="slider-label right">CONFIDENT</span>
 				
 			</div>
 			
 			<br>
 			<br>
+
 
 		</div>
 
@@ -102,14 +103,14 @@
 				
 				<div style="display:inline-block; padding-left: 10px;" data-role="controlgroup" data-type="horizontal">
 						
-					<a href="#profilepage" data-role="button" data-icon="info">Profile</a>
-					<a href="#resultspage" data-role="button" data-icon="star" onclick="result_page_enter()">Results</a>
+					<a href="#page_profile" data-role="button" data-icon="info" data-iconpos="left" onclick="page_emotion_exit();page_profile_enter();">Profile</a>
+					<a href="#page_result" data-role="button" data-icon="star" data-iconpos="left" onclick="page_emotion_exit();page_result_enter();">Results</a>
 					
 				</div>
 				
 				<div style="display:inline-block; padding-right: 10px; float:right; width:40%;">
 	
-					<a href="#riddlespage" data-role="button" data-icon="arrow-r" data-iconpos="right" onclick="fromEmotionsPageToRiddlesPage()">Go!</a>
+					<a href="#page_riddle" data-role="button" data-icon="arrow-r" data-iconpos="right" onclick="page_emotion_exit();page_riddle_enter();">Go!</a>
 			
 				</div>	
 			
@@ -120,11 +121,11 @@
 
 
 
-<!--************************-->
-<!--**   PAGE: RIDDLES    **-->
-<!--************************-->
+<!--***********************-->
+<!--**   PAGE: RIDDLE    **-->
+<!--***********************-->
 
-	<div data-role="page" id="riddlespage">
+	<div data-role="page" id="page_riddle">
 
 		<div data-role="header">
 		
@@ -159,12 +160,18 @@
 				
 			</div>
 			
-			<div style="padding: 0em 4em">
-			
-				<img id="timerIcon" src="images/timer.png" alt="Not found :(" width="50" height="65" style="float:left">
-				<p id="timerText" style="padding: 0.55em 0em 0em 2.4em; font-size: 2em;"></p>
+ 			<div align="center">
 				
-			</div>
+				<table>
+					
+					<tr>
+						<td><img id="timerIcon" src="images/timer.png" alt="Not found :(" width="50" height="65"></td>
+						<td><p id="timerText" style="font-size:2em;padding-top:15px;padding-left:5px"></p></td>
+					</tr>
+				
+				</table>
+			
+ 			</div>
 
 		</div>
 		
@@ -172,13 +179,13 @@
 				
 			<div style="padding-left: 10px; float:left; width:40%;">
 	
-				<a href="#emotionspage" onclick="fromRiddlesPageBackToEmotionsPage()" data-role="button" data-icon="arrow-l" data-iconpos="left">Back</a>
+				<a href="#page_emotion" onclick="page_riddle_exit();page_emotion_enter();" data-role="button" data-icon="arrow-l" data-iconpos="left">Back</a>
 				
 			</div>	
 				
 			<div style="padding-right: 10px; float:right; width:50%;">
 				
-				<a href="#resultspage" id="saveResultButton" style="visibility: hidden;" onclick="result_page_enter()" data-role="button" data-icon="arrow-r" data-iconpos="right">Save Result</a>
+				<a href="#page_save" id="saveResultButton" style="visibility: hidden;" onclick="page_riddle_exit();page_save_enter();" data-role="button" data-icon="arrow-r" data-iconpos="right">Save Result</a>
 				
 			</div>
 			
@@ -188,13 +195,49 @@
 	
 	
 	
+<!--***********************-->
+<!--**   PAGE: SAVE      **-->
+<!--***********************-->
+
+	<div data-role="page" id="page_save">
+
+		<div data-role="header">
+		
+			<h2>IQ-Mood</h2>
+			
+		</div>
+
+		<div data-role="content">
+	
+		<p id="save_text" style="font-size: 2em; padding: 0.5em 1em">To save your results, you need to fill in your profile. Would you like to do so now?</p>
+	
+		<a href="#page_profile" onclick="page_save_exit();page_profile_enter();" style="float:right" data-role="button" data-icon="arrow-r" data-iconpos="right">Go to my profile</a>
+	
+	
+		</div>
+		
+		<div data-role="footer" data-position="fixed" data-id="myfooter" >
+				
+			<div style="padding-left: 10px; float:left; width:40%;">
+	
+				<a href="#page_emotion" onclick="page_save_exit();page_emotion_enter();" data-role="button" data-icon="arrow-l" data-iconpos="left">Don't Save</a>
+				
+			</div>	
+			
+		</div>
+		
+	</div>
+	
+	
+	
+	
 <!--************************-->
 <!--**   PAGE: PROFILE    **-->
 <!--************************-->
 	
 	
 
-	<div data-role="page" id="profilepage">
+	<div data-role="page" id="page_profile">
 
 		<div data-role="header">
 		
@@ -204,20 +247,20 @@
 
 		<div data-role="content">
 			
-			<div class="ui-grid-a">
+			<div class="ui-grid-a" style="border:1px solid grey;">
 			
 				<div class="ui-block-a">
 					
-					<p style="padding-right: 1em;" align="right">AGE</p>
-					<p style="padding-right: 1em; padding-top: 1em;" align="right">GENDER</p>
+					<p style="padding-right: 1em; font-size: 1.3em;" align="right">AGE:</p>
+					<p style="padding-right: 1em; font-size: 1.3em;" align="right">GENDER:</p>
 							
 				</div>
 				
-				<div class="ui-block-b">
+				<div class="ui-block-b" style="padding-right: 1em;">
 				
-					<input id="age_input" type="text" style="padding-right: 6em;" maxlength="2"/>
+					<div style="padding-top: 0.1em;"><input id="age_input" type="number" placeholder="Your age..." style="padding-right: 6em; padding-top: 0.6em;" maxlength="2"/></div>
 					
-					<div data-role="controlgroup" data-type="horizontal" id="gender_radio_buttons" align="center">
+					<div id="gender_radio_buttons" data-role="controlgroup" data-type="horizontal">
 
 						<input type="radio" name="gender" id="gender_input_M"/>
 						<label for="gender_input_M"><img src="images/male.png" alt="F" width="26" height="21"></label>
@@ -229,37 +272,57 @@
 				</div>
 				
 			</div>
-			
+
 			<br>
-			<br>
-			<p>Here you can configure your options for reminding you when to solve a new riddle.</p>
+			<h4 style="text-align:center">Your mobile device retrieved the following information:</h4>
 			
-			<div class="ui-grid-a">
+			<div class="ui-grid-a" style="border:1px solid grey;">
 			
 				<div class="ui-block-a">
 					
-					<p style="padding-right: 1em; padding-top: 0.4em;" align="right">AUTO REMIND</p>
-					<p style="padding-right: 1em; padding-top: 1em;" align="right">INTERVAL</p>
+					<p style="padding-right: 1em; font-size: 1.3em;" align="right">LOCAL TIME:</p>
+					<p style="padding-right: 1em; font-size: 1.3em;" align="right">LOCATION:</p>
 							
 				</div>
 				
-				<div class="ui-block-b">
+				<div class="ui-block-b" style="padding-right: 1em;">
+				
+					<p id="local_time_text" style="color:dodgerblue; font-size: 1.3em;"></p>
+					<p id="location_text" style="color:dodgerblue; font-size: 1.3em;"></p>
+					
+				</div>
+				
+			</div>
+			
+			<br>
+			<h4 style="text-align:center">Here you can configure your reminding options:</h4>
+			
+			<div class="ui-grid-a" style="border:1px solid grey;">
+			
+				<div class="ui-block-a">
+					
+					<p style="padding-right: 1em; padding-top: -0.1em; font-size: 1.3em;" align="right">AUTO REMIND:</p>
+					<p style="padding-right: 1em; padding-top: 0.4em; font-size: 1.3em;" align="right">INTERVAL:</p>
+							
+				</div>
+				
+				<div class="ui-block-b" style="padding-right: 1em;">
 				
 					<div id="auto_remind_radio_buttons" data-role="controlgroup" data-type="horizontal">
 
-						<input type="radio" onclick="document.getElementById('interval_list').selectedIndex = 0;" name="auto_remind_button" id="auto_remind_on"/>
-						<label for="auto_remind_on"><img src="images/correct.png" alt="NO" width="26" height="21"></label>
-						<input type="radio" onclick="document.getElementById('interval_list').selectedIndex = 3;" name="auto_remind_button" id="auto_remind_off"/>
+						<input type="radio" onclick="updateRemindSelectMenu(true)" name="auto_remind_button" id="auto_remind_on"/>
+						<label for="auto_remind_on"><img src="images/correct.png" alt="YES" width="26" height="21"></label>
+						<input type="radio" onclick="updateRemindSelectMenu(false)" name="auto_remind_button" id="auto_remind_off"/>
 						<label for="auto_remind_off"><img src="images/wrong.png" alt="NO" width="26" height="21"></label>
 
 					</div>
 					
-					<select id="interval_list" name="Single-line ListBox example">
+					<select id="interval_list" onchange="updateRemindRadioButtons();">
 					
 						<option id="1" value="1">daily</option>
 						<option id="2" value="2">weekly</option>
-						<option id="3" value="4">monthly</option>
-						<option id="4" value="5">never</option>
+						<option id="3" value="3">monthly</option>
+						<option id="4" value="4">never</option>
 					
 					</select>
 					
@@ -273,7 +336,7 @@
 				
 			<div style="padding-right: 10px; float:right; width:40%;">
 	
-				<a href="#emotionspage" onclick="fromProfilePageToEmotionsPage()" data-role="button" data-icon="arrow-r" data-iconpos="right">OK</a>
+				<a href="#page_emotion" onclick="page_profile_exit();page_emotion_enter();" data-role="button" data-icon="arrow-r" data-iconpos="right">OK</a>
 				
 			</div>	
 			
@@ -288,11 +351,11 @@
 	
 	
 	
-<!--************************-->
-<!--**   PAGE: RESULTS    **-->
-<!--************************-->
+<!--***********************-->
+<!--**   PAGE: RESULT    **-->
+<!--***********************-->
 
-	<div data-role="page" id="resultspage">
+	<div data-role="page" id="page_result">
 
 		<div data-role="header">
 		
@@ -302,7 +365,7 @@
 
 		<div data-role="content" align="center">
 			
-			<div id="container" style="width: 90%; height: 70%; margin: 0 auto"></div>
+			<div id="result_graph" style="width: 85%; height: 80%; margin-right: 5%"></div>
 		
 		</div>	
 
@@ -310,11 +373,11 @@
 				
 				<div style="display:inline-block; padding-left: 10px; float:left; width:30%;">
 	
-					<a href="#emotionspage" data-role="button" data-icon="arrow-l" data-iconpos="left" onclick="fromResultsToEmotionsPage()">Back</a>
+					<a href="#page_emotion" data-role="button" data-icon="arrow-l" data-iconpos="left" onclick="page_result_exit(); page_emotion_enter();">Back</a>
 			
 				</div>
 				
-				<div style="display:inline-block; padding-right: 10px; float:right;"" data-role="controlgroup" data-type="horizontal">
+				<div style="display:inline-block; padding-right: 10px; float:right;" data-role="controlgroup" data-type="horizontal">
 						
 					<a data-role="button" data-icon="gear" onclick="viewDialog()">View</a>
 					<a data-role="button" data-icon="delete" onclick="eraseDialog()">Erase</a>

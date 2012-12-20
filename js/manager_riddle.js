@@ -1,5 +1,5 @@
 /**
- * Creates and returns a random riddle.
+ * Function that creates and returns a random riddle.
  */
 function getRandomRiddle()
 {
@@ -78,7 +78,6 @@ function getNewLetterRiddle()
 		riddlePossibleAnswers[i] = letters[i];
 	}
 
-	
 	//Create a riddle object and return it
 	var riddle =
 	{
